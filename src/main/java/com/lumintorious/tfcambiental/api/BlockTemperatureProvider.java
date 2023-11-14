@@ -23,7 +23,7 @@ public interface BlockTemperatureProvider {
         Iterable<BlockPos> allPositions = BlockPos.betweenClosed(pos1, pos2);
         BlockState skipState = Blocks.AIR.defaultBlockState();
         for(BlockPos pos : allPositions) {
-            BlockState state = player.level.getBlockState(pos);
+            BlockState state = player.level().getBlockState(pos);
             if(state == skipState) {
                 continue;
             }
@@ -47,7 +47,7 @@ public interface BlockTemperatureProvider {
                 //                    }
                 storage.add(provider.getModifier(player, pos, state));
             }
-            BlockEntity entity = player.level.getBlockEntity(pos);
+            BlockEntity entity = player.level().getBlockEntity(pos);
             if(entity != null) {
                 for(BlockEntityTemperatureProvider provider : AmbientalRegistry.BLOCK_ENTITIES) {
                     provider.getModifier(player, entity).ifPresent((mod) -> {

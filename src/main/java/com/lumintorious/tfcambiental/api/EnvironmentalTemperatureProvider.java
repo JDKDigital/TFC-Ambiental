@@ -3,7 +3,6 @@ package com.lumintorious.tfcambiental.api;
 import com.lumintorious.tfcambiental.modifier.TempModifier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
@@ -29,11 +28,11 @@ public interface EnvironmentalTemperatureProvider {
 
     static boolean calculateEnclosure(Player player, int radius) {
         PathNavigationRegion region = new PathNavigationRegion(
-            player.level,
+            player.level(),
             player.getOnPos().above().offset(-radius, -radius, -radius),
             player.getOnPos().above().offset(radius, 400, radius)
         );
-        Bee guineaPig = new Bee(EntityType.BEE, player.level);
+        Bee guineaPig = new Bee(EntityType.BEE, player.level());
         guineaPig.setPos(player.getPosition(0));
         guineaPig.setBaby(true);
         FlyNodeEvaluator evaluator = new FlyNodeEvaluator();

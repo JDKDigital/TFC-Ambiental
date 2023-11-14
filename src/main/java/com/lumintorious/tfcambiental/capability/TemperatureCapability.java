@@ -13,7 +13,6 @@ import net.dries007.tfc.common.items.TFCItems;
 import net.dries007.tfc.util.Helpers;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -170,7 +169,7 @@ public class TemperatureCapability implements ICapabilitySerializable<CompoundTa
     }
 
     public void update() {
-        boolean server = !player.level.isClientSide();
+        boolean server = !player.level().isClientSide();
         if(server) {
             this.setTemperature(this.getTemperature() + this.getChange());// / TFCAmbientalConfig.GENERAL.tickInterval);
             float envTemp = EnvironmentalModifier.getEnvironmentTemperatureWithTimeOfDay(player);

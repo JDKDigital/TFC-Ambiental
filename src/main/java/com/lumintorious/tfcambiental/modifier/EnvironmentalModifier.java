@@ -13,6 +13,7 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Optional;
 
@@ -22,8 +23,8 @@ public class EnvironmentalModifier {
     }
 
     public static float getEnvironmentTemperature(Player player) {
-        float avg = Climate.getAverageTemperature(player.level, player.getOnPos());
-        float actual = Climate.getTemperature(player.level, player.getOnPos());
+        float avg = Climate.getAverageTemperature(player.level(), player.getOnPos());
+        float actual = Climate.getTemperature(player.level(), player.getOnPos());
 //        if(TFCAmbientalConfig.GENERAL.harsherTemperateAreas) {
             float diff = actual - 15; //TemperatureCapability.AVERAGE;
             float sign = Math.signum(diff);
@@ -36,7 +37,7 @@ public class EnvironmentalModifier {
     }
 
     public static float getEnvironmentHumidity(Player player) {
-        return Climate.getRainfall(player.level, player.getOnPos()) / 3000;
+        return Climate.getRainfall(player.level(), player.getOnPos()) / 3000;
     }
 
     public static Optional<TempModifier> handleFire(Player player) {
@@ -48,7 +49,7 @@ public class EnvironmentalModifier {
     }
 
     public static Optional<TempModifier> handleTimeOfDay(Player player) {
-        int dayTicks = (int) (player.level.dayTime() % 24000);
+        int dayTicks = (int) (player.level().dayTime() % 24000);
         if(dayTicks < 6000) return TempModifier.defined("morning", 2f, 0);
         else if(dayTicks < 12000) return TempModifier.defined("afternoon", 4f, 0);
         else if(dayTicks < 18000) return TempModifier.defined("evening", 1f, 0);
@@ -57,15 +58,15 @@ public class EnvironmentalModifier {
 
     public static boolean isSpringWater(Block block) {
         return (
-            block.getRegistryName().getPath().equals(TFCFluids.SPRING_WATER.getFlowing().defaultFluidState().createLegacyBlock().getBlock().getRegistryName().getPath()) ||
-                    block.getRegistryName().equals(TFCFluids.SPRING_WATER.getSource().defaultFluidState().createLegacyBlock().getBlock().getRegistryName())
+            block == TFCFluids.SPRING_WATER.getFlowing().defaultFluidState().createLegacyBlock().getBlock() ||
+            block == TFCFluids.SPRING_WATER.getSource().defaultFluidState().createLegacyBlock().getBlock()
         );
     }
 
     public static Optional<TempModifier> handleWater(Player player) {
         if(player.isInWater()) {
             BlockPos pos = player.getOnPos().above();
-            BlockState state = player.level.getBlockState(pos);
+            BlockState state = player.level().getBlockState(pos);
     		if(isSpringWater(state.getBlock())) {
                 return TempModifier.defined("in_hot_water", 5f, 6f);
             }else if(state.getBlock() == Blocks.LAVA) {
@@ -81,7 +82,7 @@ public class EnvironmentalModifier {
     }
 
     public static Optional<TempModifier> handleRain(Player player) {
-        if(player.level.isRaining()) {
+        if(player.level().isRaining()) {
             if(getSkylight(player) < 15) {
                 return TempModifier.defined("weather", -2f, 0.1f);
             }else {
@@ -163,15 +164,15 @@ public class EnvironmentalModifier {
     }
 
     public static int getSkylight(Player player) {
-            BlockPos pos = new BlockPos(player.getPosition(0));
+            BlockPos pos = new BlockPos(player.getOnPos());
             BlockPos pos2 = pos.above(1);
-            return player.level.getBrightness(LightLayer.SKY, pos2);
+            return player.level().getBrightness(LightLayer.SKY, pos2);
     }
 
     public static int getBlockLight(Player player) {
-        BlockPos pos = new BlockPos(player.getPosition(0));
+        BlockPos pos = new BlockPos(player.getOnPos());
         BlockPos pos2 = pos.above(1);
-        return player.level.getBrightness(LightLayer.BLOCK, pos2);
+        return player.level().getBrightness(LightLayer.BLOCK, pos2);
     }
 
 //    public static EnvironmentalModifier handlePotionEffects(Player player) {

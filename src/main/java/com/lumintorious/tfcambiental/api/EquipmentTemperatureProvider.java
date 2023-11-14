@@ -31,7 +31,7 @@ public interface EquipmentTemperatureProvider {
         float AVERAGE = TFCAmbientalConfig.COMMON.averageTemperature.get().floatValue();
         if(stack.getItem() instanceof ClothesItem clothesItem) {
             if(clothesItem.getEquivalentSlot() == EquipmentSlot.HEAD) {
-                if(player.level.getBrightness(LightLayer.SKY, player.getOnPos().above()) > 14) {
+                if(player.level().getBrightness(LightLayer.SKY, player.getOnPos().above()) > 14) {
                     float envTemp = EnvironmentalModifier.getEnvironmentTemperatureWithTimeOfDay(player);
                     if(envTemp > AVERAGE) {
                         float diff = envTemp - AVERAGE;
