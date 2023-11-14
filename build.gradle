@@ -129,21 +129,20 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     //implementation fg.deobf("tfc:TerraFirmaCraft-Forge-${minecraft_version}:${tfc_version}")
-    implementation fg.deobf("curse.maven:tfc-302973:${tfc_identifier}")
+
+    implementation fg.deobf("curse.maven:terrafirmacraft-302973:4862659")
 
     if (System.getProperty("idea.sync.active") != "true") {
         annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
     }
 
     // Patchouli
-    implementation fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
+    implementation fg.deobf("curse.maven:patchouli-306770:4636277")
 
     // JEI
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}")
+    implementation "curse.maven:jei-238222:4712867"
 
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${minecraft_version}-${curios_version}")
-    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${minecraft_version}-${curios_version}:api")
+    implementation fg.deobf("curse.maven:curios-309927:4834492")
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
