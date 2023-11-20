@@ -13,7 +13,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.Optional;
 
 @FunctionalInterface
-public interface BlockTemperatureProvider {
+public interface BlockTemperatureProvider
+{
     Optional<TempModifier> getModifier(Player player, BlockPos pos, BlockState state);
 
     static void evaluateAll(Player player, TempModifierStorage storage) {
@@ -22,9 +23,9 @@ public interface BlockTemperatureProvider {
         BlockPos pos2 = new BlockPos(p.getX() + 9, p.getY() + 5, p.getZ() + 9);
         Iterable<BlockPos> allPositions = BlockPos.betweenClosed(pos1, pos2);
         BlockState skipState = Blocks.AIR.defaultBlockState();
-        for(BlockPos pos : allPositions) {
+        for (BlockPos pos : allPositions) {
             BlockState state = player.level().getBlockState(pos);
-            if(state == skipState) {
+            if (state == skipState) {
                 continue;
             }
 //            if(state.getBlock() instanceof BlockRockVariant || state.getBlock() instanceof BlockRockRaw) {
@@ -36,11 +37,11 @@ public interface BlockTemperatureProvider {
             distanceMultiplier = Math.min(1f, Math.max(0f, distanceMultiplier));
             distanceMultiplier = 1f - distanceMultiplier;
             boolean isInside = EnvironmentalModifier.getSkylight(player) < 14 && EnvironmentalModifier.getBlockLight(player) > 3;
-            if(isInside) {
+            if (isInside) {
                 distanceMultiplier *= 1.3f;
             }
             final float finalDistanceMultiplier = distanceMultiplier;
-            for(BlockTemperatureProvider provider : AmbientalRegistry.BLOCKS) {
+            for (BlockTemperatureProvider provider : AmbientalRegistry.BLOCKS) {
                 //                    if(modifier.affectedByDistance){
                 //                        modifier.setChange(modifier.getChange() * distanceMultiplier);
                 //                        modifier.setPotency(modifier.getPotency() * distanceMultiplier);
@@ -48,8 +49,8 @@ public interface BlockTemperatureProvider {
                 storage.add(provider.getModifier(player, pos, state));
             }
             BlockEntity entity = player.level().getBlockEntity(pos);
-            if(entity != null) {
-                for(BlockEntityTemperatureProvider provider : AmbientalRegistry.BLOCK_ENTITIES) {
+            if (entity != null) {
+                for (BlockEntityTemperatureProvider provider : AmbientalRegistry.BLOCK_ENTITIES) {
                     provider.getModifier(player, entity).ifPresent((mod) -> {
                         mod.setChange(mod.getChange() * finalDistanceMultiplier);
                         mod.setPotency(mod.getPotency() * finalDistanceMultiplier);

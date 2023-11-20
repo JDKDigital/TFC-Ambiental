@@ -1,57 +1,37 @@
-buildscript {
-    repositories {
-        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
-        maven { url = 'https://maven.minecraftforge.net' }
-        mavenCentral()
-        maven {
-            // Parchment
-            url = "https://maven.parchmentmc.org"
-        }
-        maven {
-            url "https://repo.spongepowered.org/repository/maven-public/"
-            content { includeGroup "org.spongepowered" }
-        }
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-        classpath group: 'org.parchmentmc', name: 'librarian', version: '1.+', changing: true
-    }
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
+version = mod_version
+group = mod_group_id
 
-apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'idea'
-apply plugin: 'maven-publish'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
-apply plugin: 'org.spongepowered.mixin'
-
-
-def envVersion = System.getenv('VERSION')
-version = envVersion == null ? '0.0.0-indev' : envVersion
-group = 'com.lumintorious.tfcambiental' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'tfcambiental'
+base {
+    archivesName = mod_id
+}
 
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
-    mappings channel: 'parchment', version: '2023.06.26-1.20.1'
-    //mappings channel: 'official', version: '1.20.1'
-
-    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg') // Currently, this location cannot be changed from the default.
-
+    mappings channel: mapping_channel, version: mapping_version
+    copyIdeResources = true
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
     runs {
         client {
             workingDirectory project.file('run')
-//            args '-mixin.config=firmalife.mixins.json'
 
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
+
+            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
+            property 'forge.enabledGameTestNamespaces', "${mod_id}"
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
 
             mods {
                 tfcambiental {
@@ -62,12 +42,35 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
-//            args '-mixin.config=firmalife.mixins.json', '--nogui'
 
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             property 'forge.logging.markers', 'REGISTRIES'
+
             property 'forge.logging.console.level', 'debug'
+
+            property 'forge.enabledGameTestNamespaces', "${mod_id}"
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+
+            mods {
+                tfcambiental {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        // This run config launches GameTestServer and runs all registered gametests, then exits.
+        // By default, the server will crash when no gametests are provided.
+        // The gametest system is also enabled by default for other run configs under the /test command.
+        gameTestServer {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+
+            property 'forge.logging.console.level', 'debug'
+
+            property 'forge.enabledGameTestNamespaces', "${mod_id}"
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
 
             mods {
                 tfcambiental {
@@ -80,10 +83,13 @@ minecraft {
             workingDirectory project.file('run')
 
             property 'forge.logging.markers', 'REGISTRIES'
+
             property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
 
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-//            args '--mod', 'firmalife', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', "${mod_id}", '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
                 tfcambiental {
@@ -128,13 +134,8 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    //implementation fg.deobf("tfc:TerraFirmaCraft-Forge-${minecraft_version}:${tfc_version}")
 
     implementation fg.deobf("curse.maven:terrafirmacraft-302973:4862659")
-
-    if (System.getProperty("idea.sync.active") != "true") {
-        annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
-    }
 
     // Patchouli
     implementation fg.deobf("curse.maven:patchouli-306770:4636277")
@@ -142,34 +143,39 @@ dependencies {
     // JEI
     implementation "curse.maven:jei-238222:4712867"
 
-    implementation "curios:curios-forge-5.4.2+1.20.1:api"
+    implementation fg.deobf("curse.maven:curios-309927:4583413")
+}
+
+def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
+def replaceProperties = [
+        minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
+        forge_version: forge_version, forge_version_range: forge_version_range,
+        loader_version_range: loader_version_range,
+        mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+        mod_authors: mod_authors, mod_description: mod_description
+]
+processResources {
+    inputs.properties replaceProperties
+    replaceProperties.put 'project', project
+
+    filesMatching(resourceTargets) {
+        expand replaceProperties
+    }
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
 jar {
     manifest {
         attributes([
-                "Specification-Title"     : "tfcambiental",
-                "Specification-Vendor"    : "lumintorious",
+                "Specification-Title"     : "${mod_name}",
+                "Specification-Vendor"    : "JDK Digital",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
-                "Implementation-Vendor"   : "eerussianguy",
+                "Implementation-Vendor"   : "JDK Digital",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-//                "MixinConfigs": "firmalife.mixins.json"
         ])
     }
-}
-
-idea {
-    module {
-        excludeDirs.add(file("run"))
-    }
-}
-
-mixin {
-    add sourceSets.main, "tfcambiental.refmap.json"
-    config("tfcambiental.mixins.json")
 }
 
 // Example configuration to allow publishing using the maven-publish plugin
@@ -189,4 +195,8 @@ publishing {
             url "file://${project.projectDir}/mcmodsrepo"
         }
     }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }

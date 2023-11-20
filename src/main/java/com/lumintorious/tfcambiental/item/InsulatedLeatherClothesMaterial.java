@@ -4,22 +4,24 @@ import com.lumintorious.tfcambiental.modifier.TempModifier;
 import net.dries007.tfc.common.items.TFCItems;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
-public class InsulatedLeatherClothesMaterial implements ArmorMaterial, TemperatureAlteringMaterial {
+public class InsulatedLeatherClothesMaterial implements ArmorMaterial, TemperatureAlteringMaterial
+{
     public static final InsulatedLeatherClothesMaterial MATERIAL = new InsulatedLeatherClothesMaterial();
 
     @Override
-    public int getDurabilityForSlot(EquipmentSlot pSlot) {
+    public int getDurabilityForType(ArmorItem.Type pType) {
         return 2500;
     }
 
     @Override
-    public int getDefenseForSlot(EquipmentSlot pSlot) {
+    public int getDefenseForType(ArmorItem.Type pType) {
         return 0;
     }
 
@@ -55,6 +57,6 @@ public class InsulatedLeatherClothesMaterial implements ArmorMaterial, Temperatu
 
     @Override
     public TempModifier getTempModifier(ItemStack stack) {
-        return new TempModifier(stack.getItem().getRegistryName().toString(), 2f, -0.15f);
+        return new TempModifier(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString(), 2f, -0.15f);
     }
 }

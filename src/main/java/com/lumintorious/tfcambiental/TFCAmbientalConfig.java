@@ -7,20 +7,22 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.function.Function;
 
-public class TFCAmbientalConfig {
+public class TFCAmbientalConfig
+{
     public static CommonImpl COMMON = register(ModConfig.Type.COMMON, CommonImpl::new);
     public static ClientImpl CLIENT = register(ModConfig.Type.CLIENT, ClientImpl::new);
 
-    public static void init() {}
+    public static void init() {
+    }
 
-    private static <C> C register(ModConfig.Type type, Function<ForgeConfigSpec.Builder, C> factory)
-    {
+    private static <C> C register(ModConfig.Type type, Function<ForgeConfigSpec.Builder, C> factory) {
         Pair<C, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(factory);
         ModLoadingContext.get().registerConfig(type, specPair.getRight());
         return specPair.getLeft();
     }
 
-    public static class CommonImpl {
+    public static class CommonImpl
+    {
         public final ForgeConfigSpec.DoubleValue averageTemperature;
         public final ForgeConfigSpec.DoubleValue hotThreshold;
         public final ForgeConfigSpec.DoubleValue coolThreshold;
@@ -33,8 +35,8 @@ public class TFCAmbientalConfig {
 
         CommonImpl(ForgeConfigSpec.Builder builder) {
             averageTemperature = builder
-                .comment("The average point for temperature, the not too warm and not too cool point")
-                .defineInRange("averageTemperature", 15F, 0F, 30F);
+                    .comment("The average point for temperature, the not too warm and not too cool point")
+                    .defineInRange("averageTemperature", 15F, 0F, 30F);
 
             hotThreshold = builder
                     .comment("The point where warmth starts to affect the screen, but only mildly")
@@ -42,7 +44,7 @@ public class TFCAmbientalConfig {
 
             coolThreshold = builder
                     .comment("The point where cold starts to affect the screen, but only mildly")
-                    .defineInRange("coolThreshold",  5F, -15F, 25F);
+                    .defineInRange("coolThreshold", 5F, -15F, 25F);
 
             burnThreshold = builder
                     .comment("The point where warmth starts to hurt the player")
@@ -50,25 +52,26 @@ public class TFCAmbientalConfig {
 
             freezeThreshold = builder
                     .comment("The point where cold starts to hurt the player")
-                    .defineInRange("freezeThreshold",  0F, -15F, 15F);
+                    .defineInRange("freezeThreshold", 0F, -15F, 15F);
 
 
             temperatureChangeSpeed = builder
                     .comment("How quickly player temperature changes towards the target environment temperature")
-                    .defineInRange("temperatureChangeSpeed",  1F, 0F, 50F);
+                    .defineInRange("temperatureChangeSpeed", 1F, 0F, 50F);
 
             goodTemperatureChangeSpeed = builder
                     .comment("How quickly player temperature changes towards the target environment temperature when it's beneficial to do so")
-                    .defineInRange("goodTemperatureChangeSpeed",  4F, 0F, 50F);
+                    .defineInRange("goodTemperatureChangeSpeed", 4F, 0F, 50F);
 
             badTemperatureChangeSpeed = builder
                     .comment("How quickly player temperature changes towards the target environment temperature when it's not beneficial")
-                    .defineInRange("badTemperatureChangeSpeed",  1F, 0F, 50F);
+                    .defineInRange("badTemperatureChangeSpeed", 1F, 0F, 50F);
 
         }
     }
 
-    public static class ClientImpl {
+    public static class ClientImpl
+    {
         public final ForgeConfigSpec.DoubleValue noiseDarkness;
         public final ForgeConfigSpec.IntValue noiseLevels;
         public final ForgeConfigSpec.IntValue noiseArea;

@@ -1,25 +1,23 @@
 package com.lumintorious.tfcambiental.item;
 
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
-import org.jetbrains.annotations.Nullable;
 
-public class ClothesItem extends Item implements Vanishable {
+public class ClothesItem extends Item implements Vanishable
+{
     private final ArmorMaterial material;
-    private final EquipmentSlot slot;
+    private final ArmorItem.Type slot;
 
-    public ClothesItem(ArmorMaterial material, EquipmentSlot slot, Properties pProperties) {
+    public ClothesItem(ArmorMaterial material, ArmorItem.Type slot, Properties pProperties) {
         super(pProperties);
         this.material = material;
         this.slot = slot;
-
     }
 
     public ArmorMaterial getMaterial() {
         return material;
     }
 
-    public EquipmentSlot getEquivalentSlot() {
+    public ArmorItem.Type getEquivalentSlot() {
         return this.slot;
     }
 
@@ -30,11 +28,6 @@ public class ClothesItem extends Item implements Vanishable {
 
     @Override
     public int getMaxDamage(ItemStack stack) {
-        return material.getDurabilityForSlot(getEquivalentSlot());
-    }
-
-    @Override
-    public int getItemStackLimit(ItemStack stack) {
-        return 1;
+        return material.getDurabilityForType(getEquivalentSlot());
     }
 }

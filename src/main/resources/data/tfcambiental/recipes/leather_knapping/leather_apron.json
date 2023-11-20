@@ -1,5 +1,5 @@
 {
-  "type":"tfc:leather_knapping",
+  "type": "tfc:leather_knapping",
   "pattern": [
     "XXXXX",
     " XXX ",
@@ -7,6 +7,7 @@
     " XXX ",
     "  X  "
   ],
-  "result":{
-    "item":"tfcambiental:leather_apron"
-  }}
+  "result": {
+    "item": "tfcambiental:leather_apron"
+  }
+}

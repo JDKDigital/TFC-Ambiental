@@ -4,11 +4,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.ICustomPacket;
-import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 
-public class TemperaturePacket {
+public class TemperaturePacket
+{
     public CompoundTag tag;
 
     public TemperaturePacket(CompoundTag tag) {
@@ -25,7 +24,7 @@ public class TemperaturePacket {
 
     public void handle(NetworkEvent.Context context) {
         context.enqueueWork(() -> {
-            if(context.getSender() != null) {
+            if (context.getSender() != null) {
                 context.getSender().getCapability(TemperatureCapability.CAPABILITY).ifPresent(cap -> {
                     cap.deserializeNBT(tag);
                 });

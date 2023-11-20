@@ -9,12 +9,13 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Optional;
 
 @FunctionalInterface
-public interface ItemTemperatureProvider {
+public interface ItemTemperatureProvider
+{
     Optional<TempModifier> getModifier(Player player, ItemStack stack);
 
     static void evaluateAll(Player player, TempModifierStorage modifiers) {
-        for(ItemStack stack : player.getInventory().items) {
-            for(ItemTemperatureProvider provider : AmbientalRegistry.ITEMS) {
+        for (ItemStack stack : player.getInventory().items) {
+            for (ItemTemperatureProvider provider : AmbientalRegistry.ITEMS) {
                 modifiers.add(provider.getModifier(player, stack));
             }
         }
@@ -23,7 +24,7 @@ public interface ItemTemperatureProvider {
     static Optional<TempModifier> handleTemperatureCapability(Player player, ItemStack stack) {
         return stack.getCapability(HeatCapability.CAPABILITY).map(cap -> {
             float temp = cap.getTemperature() / 800;
-            float potency = 0f;
+            float potency = 0.1f;
             return new TempModifier("heat_item", temp, potency * stack.getCount());
         });
     }

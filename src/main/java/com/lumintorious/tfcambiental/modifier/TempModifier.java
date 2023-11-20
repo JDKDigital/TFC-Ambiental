@@ -1,31 +1,19 @@
 package com.lumintorious.tfcambiental.modifier;
 
-import com.lumintorious.tfcambiental.capability.TemperatureCapability;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public class TempModifier implements Comparable<TempModifier>{
+public class TempModifier implements Comparable<TempModifier>
+{
     private String unlocalizedName;
-    private float change = 0f;
-    private float potency = 0f;
+    private float change;
+    private float potency;
     private int count = 1;
     private float multiplier = 1f;
 
-    public float getMultiplier() {
-        return multiplier;
-    }
-
-    public void setMultiplier(float multiplier) {
-        this.multiplier = multiplier;
-    }
-
-    public void addMultiplier(float multiplier) {
-        this.setMultiplier(this.getMultiplier() * multiplier);
-    }
-
     public float getChange() {
-        return change * multiplier * 1; //(count == 1 ? 1f : TFCAmbientalConfig.GENERAL.diminishedModifierMultiplier);
+        return change * multiplier * 1;
     }
 
     public void setChange(float change) {
@@ -33,29 +21,11 @@ public class TempModifier implements Comparable<TempModifier>{
     }
 
     public float getPotency() {
-        return potency * multiplier * 1; //(count == 1 ? 1f : TFCAmbientalConfig.GENERAL.diminishedModifierMultiplier);
+        return potency * multiplier * 1;
     }
 
     public void setPotency(float potency) {
         this.potency = potency;
-    }
-
-    public void addCount() {
-        count++;
-    }
-
-    public void absorb(TempModifier modifier) {
-//        if(count >= TFCAmbientalConfig.GENERAL.modifierCap) {
-//            return;
-//        }
-        this.count += modifier.count;
-        this.change += modifier.change;
-        this.potency += modifier.potency;
-        this.addMultiplier(modifier.getMultiplier());
-    }
-
-    public int getCount() {
-        return count;
     }
 
     public String getUnlocalizedName() {
@@ -63,7 +33,7 @@ public class TempModifier implements Comparable<TempModifier>{
     }
 
     public TempModifier(String unlocalizedName) {
-        this.unlocalizedName = unlocalizedName;
+        this(unlocalizedName, 0f, 0f);
     }
 
     public TempModifier(String unlocalizedName, float change, float potency) {
@@ -78,18 +48,6 @@ public class TempModifier implements Comparable<TempModifier>{
 
     public static Optional<TempModifier> none() {
         return Optional.empty();
-    }
-
-//    public String getDisplayName() {
-//        return Util.translate(TFCAmbiental.MODID + ".modifier." + this.unlocalizedName);
-//    }
-
-    public void apply(TemperatureCapability temp) {
-        // nothing;
-    }
-
-    public void cancel(TemperatureCapability temp) {
-        // nothing;
     }
 
     @Override

@@ -1,12 +1,12 @@
 package com.lumintorious.tfcambiental;
 
-import net.minecraft.core.Holder;
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageType;
 
-public abstract class AmbientalDamage {
-    static DamageType HOT = new DamageType("heatstroke",0.2f);
-    static DamageType FREEZE = new DamageType("frostbite",0.4f)
-    public static final DamageSource HEAT = new DamageSource(HOT).bypassArmor();
-    public static final DamageSource COLD = new DamageSource(FREEZE).bypassArmor();
+public abstract class AmbientalDamage
+{
+    public static final ResourceKey<DamageType> HOT = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(TFCAmbiental.MOD_ID, "heatstroke"));
+    public static final ResourceKey<DamageType> FREEZE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(TFCAmbiental.MOD_ID, "frostbite"));
 }

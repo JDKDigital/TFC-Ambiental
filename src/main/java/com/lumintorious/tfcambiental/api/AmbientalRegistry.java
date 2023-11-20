@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Optional;
 
-public class AmbientalRegistry<Type> implements Iterable<Type> {
+public class AmbientalRegistry<Type> implements Iterable<Type>
+{
     public static final AmbientalRegistry<ItemTemperatureProvider> ITEMS = new AmbientalRegistry<>();
     public static final AmbientalRegistry<BlockTemperatureProvider> BLOCKS = new AmbientalRegistry<>();
     public static final AmbientalRegistry<BlockEntityTemperatureProvider> BLOCK_ENTITIES = new AmbientalRegistry<>();
@@ -30,7 +31,7 @@ public class AmbientalRegistry<Type> implements Iterable<Type> {
 
         BLOCKS.register((player, pos, state) -> Optional.of(new TempModifier("fire", 3f, 0f)).filter((mod) -> state.getBlock() == Blocks.FIRE));
         BLOCKS.register((player, pos, state) -> Optional.of(new TempModifier("lava", 3f, 0f)).filter((mod) -> state.getBlock() == Blocks.LAVA));
-        BLOCKS.register((player, pos, state) -> Optional.of(new TempModifier("snow", -0.5f, 0.2f)).filter((mod) -> state.getBlock() == Blocks.SNOW && player.level.getBrightness(LightLayer.SKY, pos) == 15));
+        BLOCKS.register((player, pos, state) -> Optional.of(new TempModifier("snow", -0.5f, 0.2f)).filter((mod) -> state.getBlock() == Blocks.SNOW && player.level().getBrightness(LightLayer.SKY, pos) == 15));
 
         ENVIRONMENT.register(EnvironmentalModifier::handleGeneralTemperature);
         ENVIRONMENT.register(EnvironmentalModifier::handleTimeOfDay);
@@ -49,7 +50,8 @@ public class AmbientalRegistry<Type> implements Iterable<Type> {
 
     private final ArrayList<Type> list = new ArrayList<>();
 
-    private AmbientalRegistry() {}
+    private AmbientalRegistry() {
+    }
 
     public void register(Type type) {
         list.add(type);
