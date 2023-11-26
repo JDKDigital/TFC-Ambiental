@@ -1,4 +1,4 @@
-package com.lumintorious.tfcambiental.item;
+package com.lumintorious.tfcambiental.item.material;
 
 import com.lumintorious.tfcambiental.modifier.TempModifier;
 import net.dries007.tfc.common.items.TFCItems;
@@ -11,13 +11,13 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
-public class StrawClothesMaterial implements ArmorMaterial, TemperatureAlteringMaterial
+public class WoolClothesMaterial implements ArmorMaterial, TemperatureAlteringMaterial
 {
-    public static final StrawClothesMaterial MATERIAL = new StrawClothesMaterial();
+    public static final WoolClothesMaterial MATERIAL = new WoolClothesMaterial();
 
     @Override
     public int getDurabilityForType(ArmorItem.Type pType) {
-        return 100;
+        return 3000;
     }
 
     @Override
@@ -27,22 +27,22 @@ public class StrawClothesMaterial implements ArmorMaterial, TemperatureAlteringM
 
     @Override
     public int getEnchantmentValue() {
-        return 1;
+        return 0;
     }
 
     @Override
     public @NotNull SoundEvent getEquipSound() {
-        return SoundEvents.GRASS_BREAK;
+        return SoundEvents.WOOL_PLACE;
     }
 
     @Override
     public @NotNull Ingredient getRepairIngredient() {
-        return Ingredient.of(new ItemStack(TFCItems.STRAW.get(), 1));
+        return Ingredient.of(new ItemStack(TFCItems.WOOL_CLOTH.get(), 1));
     }
 
     @Override
     public @NotNull String getName() {
-        return "tfcambiental:straw";
+        return "tfcambiental:wool_cloth";
     }
 
     @Override
@@ -57,6 +57,6 @@ public class StrawClothesMaterial implements ArmorMaterial, TemperatureAlteringM
 
     @Override
     public TempModifier getTempModifier(ItemStack stack) {
-        return new TempModifier(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString(), 0, -0.1f);
+        return new TempModifier(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString(), 4f, -0.15f);
     }
 }

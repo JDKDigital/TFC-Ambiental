@@ -1,9 +1,8 @@
 package com.lumintorious.tfcambiental.api;
 
+import com.lumintorious.tfcambiental.TFCAmbiental;
 import com.lumintorious.tfcambiental.TFCAmbientalConfig;
-import com.lumintorious.tfcambiental.item.ClothesItem;
-import com.lumintorious.tfcambiental.item.TemperatureAlteringMaterial;
-import com.lumintorious.tfcambiental.modifier.EnvironmentalModifier;
+import com.lumintorious.tfcambiental.item.material.TemperatureAlteringMaterial;
 import com.lumintorious.tfcambiental.modifier.TempModifier;
 import com.lumintorious.tfcambiental.modifier.TempModifierStorage;
 import net.minecraft.world.entity.player.Player;
@@ -20,7 +19,7 @@ public interface EquipmentTemperatureProvider
     Optional<TempModifier> getModifier(Player player, ItemStack stack);
 
     static Optional<TempModifier> handleClothes(Player player, ItemStack stack) {
-        if (stack.getItem() instanceof ClothesItem clothesItem) {
+        if (stack.getItem() instanceof ArmorItem clothesItem) {
             if (clothesItem.getMaterial() instanceof TemperatureAlteringMaterial tempMaterial) {
                 return Optional.of(tempMaterial.getTempModifier(stack));
             }
@@ -30,18 +29,18 @@ public interface EquipmentTemperatureProvider
 
     static Optional<TempModifier> handleSunlightCap(Player player, ItemStack stack) {
         float AVERAGE = TFCAmbientalConfig.COMMON.averageTemperature.get().floatValue();
-        if (stack.getItem() instanceof ClothesItem clothesItem) {
-            if (clothesItem.getEquivalentSlot().equals(ArmorItem.Type.HELMET)) {
-                if (player.level().getBrightness(LightLayer.SKY, player.getOnPos().above()) > 14) {
-                    float envTemp = EnvironmentalModifier.getEnvironmentTemperatureWithTimeOfDay(player);
-                    if (envTemp > AVERAGE) {
-                        float diff = envTemp - AVERAGE;
-                        Optional<TempModifier> helmetMod = handleClothes(player, stack);
-                        if (helmetMod.isPresent()) {
-                            diff = diff - helmetMod.get().getChange();
-                        }
-                        return TempModifier.defined("sunlight_protection", diff * -0.2f, -0.5f);
+        if (stack.is(TFCAmbiental.SUNBLOCKING_APPAREL)) {
+            if (player.level().getBrightness(LightLayer.SKY, player.getOnPos().above()) > 14) {
+                float envTemp = EnvironmentalTemperatureProvider.getEnvironmentTemperatureWithTimeOfDay(player);
+                if (envTemp > AVERAGE) {
+                    float diff = envTemp - AVERAGE;
+                    Optional<TempModifier> helmetMod = handleClothes(player, stack);
+                    if (helmetMod.isPresent()) {
+                        diff -= helmetMod.get().getChange();
+                    } else {
+                        diff -= 1;
                     }
+                    return TempModifier.defined("sunlight_protection", diff * -0.2f, -0.5f);
                 }
             }
         }

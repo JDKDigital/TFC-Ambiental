@@ -1,5 +1,7 @@
 package com.lumintorious.tfcambiental.api;
 
+import com.lumintorious.tfcambiental.TFCAmbiental;
+import com.lumintorious.tfcambiental.TFCAmbientalConfig;
 import com.lumintorious.tfcambiental.modifier.TempModifier;
 import com.lumintorious.tfcambiental.modifier.TempModifierStorage;
 import net.dries007.tfc.common.capabilities.heat.HeatCapability;
@@ -24,8 +26,11 @@ public interface ItemTemperatureProvider
     static Optional<TempModifier> handleTemperatureCapability(Player player, ItemStack stack) {
         return stack.getCapability(HeatCapability.CAPABILITY).map(cap -> {
             float temp = cap.getTemperature() / 800;
-            float potency = 0.1f;
-            return new TempModifier("heat_item", temp, potency * stack.getCount());
+            return new TempModifier("heat_item", temp, 0.1f * stack.getCount());
         });
+    }
+
+    static Optional<TempModifier> handleHotIngots(Player player, ItemStack stack) {
+        return stack.is(TFCAmbiental.HOT_INGOTS) ? Optional.of(new TempModifier("heat_item", TFCAmbientalConfig.COMMON.hotIngotTemperature.get().floatValue(), 0.1f * stack.getCount())) : TempModifier.none();
     }
 }

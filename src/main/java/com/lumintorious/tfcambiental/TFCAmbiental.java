@@ -4,15 +4,22 @@ import com.lumintorious.tfcambiental.capability.TemperaturePacket;
 import com.lumintorious.tfcambiental.event.ClientEventHandler;
 import com.lumintorious.tfcambiental.item.ClothesItem;
 import com.lumintorious.tfcambiental.item.TFCAmbientalItems;
-import com.lumintorious.tfcambiental.item.TemperatureAlteringMaterial;
+import com.lumintorious.tfcambiental.item.material.TemperatureAlteringMaterial;
 import com.lumintorious.tfcambiental.modifier.TempModifier;
 import com.mojang.logging.LogUtils;
 import net.dries007.tfc.util.Helpers;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -41,6 +48,16 @@ public class TFCAmbiental
     public static final ResourceLocation CHEST_SLOT = new ResourceLocation("curios:slot/clothes_torso");
     public static final ResourceLocation LEGS_SLOT = new ResourceLocation("curios:slot/clothes_pants");
     public static final ResourceLocation FEET_SLOT = new ResourceLocation("curios:slot/clothes_socks");
+
+    public static final TagKey<Item> SUNBLOCKING_APPAREL = TagKey.create(Registries.ITEM, new ResourceLocation(MOD_ID, "sunblocking_apparel"));
+    public static final TagKey<Item> HOT_INGOTS = TagKey.create(Registries.ITEM, new ResourceLocation( "forge:hot_ingots"));
+    public static final TagKey<Block> WARM_STUFF = TagKey.create(Registries.BLOCK, new ResourceLocation(MOD_ID, "warm_stuff"));
+    public static final TagKey<Block> HOT_STUFF = TagKey.create(Registries.BLOCK, new ResourceLocation(MOD_ID, "hot_stuff"));
+    public static final TagKey<Block> COLD_STUFF = TagKey.create(Registries.BLOCK, new ResourceLocation(MOD_ID, "cold_stuff"));
+    public static final TagKey<Fluid> SPRING_WATER = TagKey.create(Registries.FLUID, Helpers.identifier("spring_water"));
+
+    public static final ResourceKey<DamageType> HOT = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(TFCAmbiental.MOD_ID, "heatstroke"));
+    public static final ResourceKey<DamageType> FREEZE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(TFCAmbiental.MOD_ID, "frostbite"));
 
     public static final String VERSION = Integer.toString(1);
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(Helpers.identifier("tfcambiental"), () -> VERSION, VERSION::equals, VERSION::equals);
@@ -75,7 +92,6 @@ public class TFCAmbiental
     }
 
     private void onInterModComms(InterModEnqueueEvent event) {
-        // TODO jdk
         InterModComms.sendTo(CURIOS_ID, SlotTypeMessage.REGISTER_TYPE, () ->
                 new SlotTypeMessage.Builder("clothes_hat")
                         .icon(HEAD_SLOT)
@@ -113,7 +129,7 @@ public class TFCAmbiental
                 insulation = (modifier.getPotency() / 0.1f);
 
             }
-            if (clothesItem.getEquivalentSlot().equals(ArmorItem.Type.HELMET)) {
+            if (clothesItem.getType().equals(ArmorItem.Type.HELMET)) {
                 event.getToolTip().add(
                         Component.translatable(
                                 "tfcambiental.tooltip.sun_protection"

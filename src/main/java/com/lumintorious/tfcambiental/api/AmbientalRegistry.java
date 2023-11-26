@@ -1,9 +1,8 @@
 package com.lumintorious.tfcambiental.api;
 
-import com.lumintorious.tfcambiental.modifier.EnvironmentalModifier;
+import com.lumintorious.tfcambiental.TFCAmbiental;
 import com.lumintorious.tfcambiental.modifier.TempModifier;
 import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.block.Blocks;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -22,30 +21,31 @@ public class AmbientalRegistry<Type> implements Iterable<Type>
         EQUIPMENT.register(EquipmentTemperatureProvider::handleClothes);
 
         ITEMS.register(ItemTemperatureProvider::handleTemperatureCapability);
+        ITEMS.register(ItemTemperatureProvider::handleHotIngots);
 
         BLOCK_ENTITIES.register(BlockEntityTemperatureProvider::handleCharcoalForge);
         BLOCK_ENTITIES.register(BlockEntityTemperatureProvider::handleFirePit);
         BLOCK_ENTITIES.register(BlockEntityTemperatureProvider::handleBloomery);
         BLOCK_ENTITIES.register(BlockEntityTemperatureProvider::handleIHeatBlock);
-//        BLOCK_ENTITIES.register(BlockEntityTemperatureProvider::handleLamps);
 
-        BLOCKS.register((player, pos, state) -> Optional.of(new TempModifier("fire", 3f, 0f)).filter((mod) -> state.getBlock() == Blocks.FIRE));
-        BLOCKS.register((player, pos, state) -> Optional.of(new TempModifier("lava", 3f, 0f)).filter((mod) -> state.getBlock() == Blocks.LAVA));
-        BLOCKS.register((player, pos, state) -> Optional.of(new TempModifier("snow", -0.5f, 0.2f)).filter((mod) -> state.getBlock() == Blocks.SNOW && player.level().getBrightness(LightLayer.SKY, pos) == 15));
+        BLOCKS.register((player, pos, state) -> Optional.of(new TempModifier("hot_block", 3f, 0.2f, -15f)).filter((mod) -> state.is(TFCAmbiental.HOT_STUFF)));
+        BLOCKS.register((player, pos, state) -> Optional.of(new TempModifier("cold_stuff", -0.5f, 0.2f)).filter((mod) -> state.is(TFCAmbiental.COLD_STUFF) && player.level().getBrightness(LightLayer.SKY, pos) == 15));
+        BLOCKS.register((player, pos, state) -> Optional.of(new TempModifier("warm_block", 1f, 0f, -5f)).filter((mod) -> state.is(TFCAmbiental.WARM_STUFF)));
 
-        ENVIRONMENT.register(EnvironmentalModifier::handleGeneralTemperature);
-        ENVIRONMENT.register(EnvironmentalModifier::handleTimeOfDay);
-        ENVIRONMENT.register(EnvironmentalModifier::handleShade);
-        ENVIRONMENT.register(EnvironmentalModifier::handleCozy);
-        ENVIRONMENT.register(EnvironmentalModifier::handleThirst);
-        ENVIRONMENT.register(EnvironmentalModifier::handleFood);
-        ENVIRONMENT.register(EnvironmentalModifier::handleDiet);
-        ENVIRONMENT.register(EnvironmentalModifier::handleFire);
-        ENVIRONMENT.register(EnvironmentalModifier::handleWater);
-        ENVIRONMENT.register(EnvironmentalModifier::handleRain);
-        ENVIRONMENT.register(EnvironmentalModifier::handleSprinting);
-        ENVIRONMENT.register(EnvironmentalModifier::handleUnderground);
-//        ENVIRONMENT.register(EnvironmentalModifier::handlePotionEffects);
+        ENVIRONMENT.register(EnvironmentalTemperatureProvider::handleGeneralTemperature);
+        ENVIRONMENT.register(EnvironmentalTemperatureProvider::handleTimeOfDay);
+        ENVIRONMENT.register(EnvironmentalTemperatureProvider::handleShade);
+        ENVIRONMENT.register(EnvironmentalTemperatureProvider::handleCozy);
+        ENVIRONMENT.register(EnvironmentalTemperatureProvider::handleThirst);
+        ENVIRONMENT.register(EnvironmentalTemperatureProvider::handleFood);
+        ENVIRONMENT.register(EnvironmentalTemperatureProvider::handleDiet);
+        ENVIRONMENT.register(EnvironmentalTemperatureProvider::handleFire);
+        ENVIRONMENT.register(EnvironmentalTemperatureProvider::handleWater);
+        ENVIRONMENT.register(EnvironmentalTemperatureProvider::handleRain);
+        ENVIRONMENT.register(EnvironmentalTemperatureProvider::handleWind);
+        ENVIRONMENT.register(EnvironmentalTemperatureProvider::handleSprinting);
+        ENVIRONMENT.register(EnvironmentalTemperatureProvider::handleUnderground);
+        ENVIRONMENT.register(EnvironmentalTemperatureProvider::handleWetness);
     }
 
     private final ArrayList<Type> list = new ArrayList<>();

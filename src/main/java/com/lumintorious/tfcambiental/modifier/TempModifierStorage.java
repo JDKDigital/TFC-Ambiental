@@ -8,30 +8,9 @@ public class TempModifierStorage implements Iterable<TempModifier>
 {
     private List<TempModifier> list = new LinkedList<>();
 
-//    private TempModifier put(String key, TempModifier value) {
-//        if((value.getChange() == 0f && value.getPotency() == 0f)) {
-//            return null;
-//        }
-//        TempModifier modifier = map.get(key);
-//        if(modifier != null) {
-//            modifier.absorb(value);
-//            return modifier;
-//        }else {
-//            return map.put(key, value);
-//        }
-//    }
-
     public TempModifierStorage keepOnlyNEach(int n) {
         var grouped = list.stream().collect(Collectors.groupingBy(TempModifier::getUnlocalizedName));
-        this.list = grouped
-                .entrySet()
-                .stream()
-                .flatMap(entry ->
-                        entry.getValue()
-                                .stream()
-                                .sorted(Comparator.reverseOrder())
-                                .limit(n)
-                ).toList();
+        this.list = grouped.entrySet().stream().flatMap(entry -> entry.getValue().stream().sorted(Comparator.reverseOrder()).limit(n)).toList();
         return this;
     }
 
@@ -46,12 +25,12 @@ public class TempModifierStorage implements Iterable<TempModifier>
         tempModifier.ifPresent(mod -> list.add(mod));
     }
 
-    public boolean contains(TempModifier value) {
-        return list.contains(value);
-    }
-
-    public boolean contains(String name) {
-        return list.stream().anyMatch(mod -> mod.getUnlocalizedName().equals(name));
+    public float getTargetTemperature() {
+        float change = 1f;
+        for (var mod : list) {
+            change += mod.getChange();
+        }
+        return change;
     }
 
     public float getTotalPotency() {
@@ -62,12 +41,12 @@ public class TempModifierStorage implements Iterable<TempModifier>
         return potency;
     }
 
-    public float getTargetTemperature() {
-        float change = 1f;
+    public float getTargetWetness() {
+        float wetness = 0f;
         for (var mod : list) {
-            change += mod.getChange();
+            wetness += mod.getWetness();
         }
-        return change;
+        return wetness;
     }
 
     public void forEach(Consumer<? super TempModifier> func) {

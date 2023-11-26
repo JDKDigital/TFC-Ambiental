@@ -29,9 +29,12 @@ public class TFCAmbientalConfig
         public final ForgeConfigSpec.DoubleValue burnThreshold;
         public final ForgeConfigSpec.DoubleValue freezeThreshold;
 
+        public final ForgeConfigSpec.DoubleValue wetnessChangeSpeed;
         public final ForgeConfigSpec.DoubleValue temperatureChangeSpeed;
         public final ForgeConfigSpec.DoubleValue goodTemperatureChangeSpeed;
         public final ForgeConfigSpec.DoubleValue badTemperatureChangeSpeed;
+
+        public final ForgeConfigSpec.DoubleValue hotIngotTemperature;
 
         CommonImpl(ForgeConfigSpec.Builder builder) {
             averageTemperature = builder
@@ -54,6 +57,9 @@ public class TFCAmbientalConfig
                     .comment("The point where cold starts to hurt the player")
                     .defineInRange("freezeThreshold", 0F, -15F, 15F);
 
+            wetnessChangeSpeed = builder
+                    .comment("How quickly player wetness changes towards the target environment wetness")
+                    .defineInRange("wetnessChangeSpeed", 1F, 0F, 50F);
 
             temperatureChangeSpeed = builder
                     .comment("How quickly player temperature changes towards the target environment temperature")
@@ -67,6 +73,10 @@ public class TFCAmbientalConfig
                     .comment("How quickly player temperature changes towards the target environment temperature when it's not beneficial")
                     .defineInRange("badTemperatureChangeSpeed", 1F, 0F, 50F);
 
+            hotIngotTemperature = builder
+                    .comment("How much do items in the forge:hot_ingots tag modify the temperature of the player")
+                    .defineInRange("hotIngotTemperature", 1F, 0F, Float.MAX_VALUE);
+
         }
     }
 
@@ -75,6 +85,7 @@ public class TFCAmbientalConfig
         public final ForgeConfigSpec.DoubleValue noiseDarkness;
         public final ForgeConfigSpec.IntValue noiseLevels;
         public final ForgeConfigSpec.IntValue noiseArea;
+        public final ForgeConfigSpec.IntValue drippiness;
 
         public final ForgeConfigSpec.ConfigValue<String> seasonColorSummer;
         public final ForgeConfigSpec.ConfigValue<String> seasonColorAutumn;
@@ -95,6 +106,10 @@ public class TFCAmbientalConfig
             noiseArea = builder
                     .comment("How big should noise areas be?")
                     .defineInRange("noiseArea", 10, 3, 50);
+
+            drippiness = builder
+                    .comment("How much to drip when wet. 0 to turn off")
+                    .defineInRange("drippiness", 30, 0, 100);
 
             seasonColorSummer = builder
                     .comment("ARGB code for summer coloring in hexadecimal. Default: 1222FF11")

@@ -1,5 +1,6 @@
 {
-  "type": "tfc:leather_knapping",
+  "type": "tfc:knapping",
+  "knapping_type": "tfc:leather",
   "pattern": [
     "XXXXX",
     " XXX ",

@@ -1,4 +1,4 @@
-package com.lumintorious.tfcambiental.item;
+package com.lumintorious.tfcambiental.item.material;
 
 import com.lumintorious.tfcambiental.modifier.TempModifier;
 import net.dries007.tfc.common.items.TFCItems;
@@ -11,9 +11,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
-public class WoolClothesMaterial implements ArmorMaterial, TemperatureAlteringMaterial
+public class SilkClothesMaterial implements ArmorMaterial, TemperatureAlteringMaterial
 {
-    public static final WoolClothesMaterial MATERIAL = new WoolClothesMaterial();
+    public static final SilkClothesMaterial MATERIAL = new SilkClothesMaterial();
 
     @Override
     public int getDurabilityForType(ArmorItem.Type pType) {
@@ -27,7 +27,7 @@ public class WoolClothesMaterial implements ArmorMaterial, TemperatureAlteringMa
 
     @Override
     public int getEnchantmentValue() {
-        return 0;
+        return 1;
     }
 
     @Override
@@ -37,12 +37,12 @@ public class WoolClothesMaterial implements ArmorMaterial, TemperatureAlteringMa
 
     @Override
     public @NotNull Ingredient getRepairIngredient() {
-        return Ingredient.of(new ItemStack(TFCItems.WOOL_CLOTH.get(), 1));
+        return Ingredient.of(new ItemStack(TFCItems.SILK_CLOTH.get(), 1));
     }
 
     @Override
     public @NotNull String getName() {
-        return "tfcambiental:wool_cloth";
+        return "tfcambiental:silk_cloth";
     }
 
     @Override
@@ -57,6 +57,6 @@ public class WoolClothesMaterial implements ArmorMaterial, TemperatureAlteringMa
 
     @Override
     public TempModifier getTempModifier(ItemStack stack) {
-        return new TempModifier(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString(), 4f, -0.15f);
+        return new TempModifier(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString(), -1f, -0.1f);
     }
 }

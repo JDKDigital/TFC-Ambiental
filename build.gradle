@@ -135,7 +135,7 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    implementation fg.deobf("curse.maven:terrafirmacraft-302973:4862659")
+    implementation fg.deobf("curse.maven:terrafirmacraft-302973:4895012")
 
     // Patchouli
     implementation fg.deobf("curse.maven:patchouli-306770:4636277")

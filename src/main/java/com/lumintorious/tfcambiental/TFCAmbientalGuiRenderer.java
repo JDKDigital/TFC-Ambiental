@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.common.ForgeMod;
 import org.lwjgl.opengl.GL11;
 
 @OnlyIn(Dist.CLIENT)
@@ -23,36 +24,38 @@ public class TFCAmbientalGuiRenderer
     public static final ResourceLocation PLUS = new ResourceLocation("tfcambiental:textures/gui/higher.png");
     public static final ResourceLocation MINUSER = new ResourceLocation("tfcambiental:textures/gui/lowerer.png");
     public static final ResourceLocation PLUSER = new ResourceLocation("tfcambiental:textures/gui/higherer.png");
+    public static final ResourceLocation WET = new ResourceLocation("tfcambiental:textures/gui/wet.png");
 
     public static void render(ForgeGui gui, GuiGraphics stack, float partialTicks, int widthh, int heightt) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.player.isCreative() || !mc.player.isAlive() || mc.player.isSpectator()) {
+        Player player = (Player) mc.getCameraEntity();
+        if (player == null || player.isCreative() || !player.isAlive() || player.isSpectator()) {
             return;
         }
-        TemperatureCapability tempSystem = mc.player.getCapability(TemperatureCapability.CAPABILITY, null).orElse(TemperatureCapability.DEFAULT);
+        TemperatureCapability tempSystem = player.getCapability(TemperatureCapability.CAPABILITY, null).orElse(TemperatureCapability.DEFAULT);
         int width = mc.getWindow().getGuiScaledWidth();
         int height = mc.getWindow().getGuiScaledHeight();
         float redCol, greenCol, blueCol, temperature;
 
-        drawTemperatureVignettes(width, height, mc.player);
+        drawTemperatureVignettes(width, height, player);
 
         int healthRowHeight = mc.getWindow().getGuiScaledHeight();
         int armorRowHeight = healthRowHeight - 51;
         int mid = mc.getWindow().getGuiScaledWidth() / 2;
-        temperature = tempSystem.getTemperature();
+
         RenderSystem.enableBlend();
         float AVERAGE = TFCAmbientalConfig.COMMON.averageTemperature.get().floatValue();
         float HOT_THRESHOLD = TFCAmbientalConfig.COMMON.hotThreshold.get().floatValue();
         float COOL_THRESHOLD = TFCAmbientalConfig.COMMON.coolThreshold.get().floatValue();
-        if (temperature > AVERAGE) {
+        if (tempSystem.getTemperature() > AVERAGE) {
             float hotRange = HOT_THRESHOLD - AVERAGE + 2;
-            float red = Math.max(0, Math.min(1, (temperature - AVERAGE) / hotRange));
+            float red = Math.max(0, Math.min(1, (tempSystem.getTemperature() - AVERAGE) / hotRange));
             redCol = 1F;
             greenCol = 1.0F - red / 2.4F;
             blueCol = 1.0F - red / 1.6F;
         } else {
             float coolRange = AVERAGE - COOL_THRESHOLD - 2;
-            float blue = Math.max(0, Math.min(1, (AVERAGE - temperature) / coolRange));
+            float blue = Math.max(0, Math.min(1, (AVERAGE - tempSystem.getTemperature()) / coolRange));
             redCol = 1.0F - blue / 1.6F;
             greenCol = 1.0F - blue / 2.4F;
             blueCol = 1.0F;
@@ -61,7 +64,7 @@ public class TFCAmbientalGuiRenderer
         RenderSystem.enableBlend();
         RenderSystem.setShaderColor(redCol, greenCol, blueCol, 0.9F);
 
-        float change = tempSystem.getChange();
+        float change = tempSystem.getTemperatureChange();
 
         if (change > 0) {
             if (change > TemperatureCapability.HIGH_CHANGE) {
@@ -76,13 +79,23 @@ public class TFCAmbientalGuiRenderer
                 drawTexturedModalRect(gui, stack, mid - 8, armorRowHeight - 4, 16, 16, MINUS);
             }
         }
-        if (mc.player.isCrouching()) {
-            TemperatureCapability sys = tempSystem;
-            float targetFormatted = sys.getTargetTemperature();
+
+        if (player.isCrouching()) {
+            var shiftHeight = 0.0f;
+            int air = player.getAirSupply();
+            if (player.isEyeInFluidType(ForgeMod.WATER_TYPE.get()) || air < 300) {
+                shiftHeight = 10.0f;
+            }
+
             Font f = gui.getFont();
-            String tempStr = String.format("%.1f\u00BA -> %.1f\u00BA", temperature, targetFormatted);
-            stack.drawString(f, tempStr, mid + 50 - f.width(tempStr) / 2F, armorRowHeight + 1, TFCAmbientalGuiRenderer.getIntFromColor(redCol, greenCol, blueCol), false);
+            String tempStr = String.format("%.1f\u00BA -> %.1f\u00BA", tempSystem.getTemperature(), tempSystem.getTargetTemperature());
+            stack.drawString(f, tempStr, mid + 50 - f.width(tempStr) / 2F, armorRowHeight + 1 - shiftHeight, TFCAmbientalGuiRenderer.getIntFromColor(redCol, greenCol, blueCol), false);
+
+            String wetStr = String.format("%.1f -> %.1f", tempSystem.getWetness(), Math.max(0, tempSystem.getTargetWetness()));
+            stack.drawString(f, wetStr, mid - 10 - f.width(tempStr), armorRowHeight + 1, TFCAmbientalGuiRenderer.getIntFromColor(redCol, greenCol, blueCol), false);
+            drawTexturedModalRect(gui, stack, mid - 26 - f.width(tempStr), armorRowHeight - 4, 16, 16, WET);
         }
+
         RenderSystem.setShaderColor(1f, 1f, 1f, 0.9F);
         RenderSystem.disableBlend();
     }

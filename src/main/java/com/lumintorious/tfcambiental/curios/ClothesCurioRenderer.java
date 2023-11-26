@@ -26,7 +26,7 @@ public class ClothesCurioRenderer implements ICurioRenderer
     @SuppressWarnings("unchecked")
     public <T extends LivingEntity, M extends EntityModel<T>> void render(ItemStack stack, SlotContext slotContext, PoseStack poseStack, RenderLayerParent<T, M> renderLayerParent, MultiBufferSource renderTypeBuffer, int light, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         if (slotContext.entity() instanceof AbstractClientPlayer player && stack.getItem() instanceof ClothesItem clothesItem) {
-            if (slotContext.entity().getItemBySlot(clothesItem.getEquivalentSlot().getSlot()).isEmpty()) {
+            if (slotContext.entity().getItemBySlot(clothesItem.getType().getSlot()).isEmpty()) {
                 boolean isSlim = player.getModelName().equals("slim");
                 HumanoidModel<T> model = new HumanoidModel<T>(
                         Minecraft.getInstance().getEntityModels().bakeLayer(

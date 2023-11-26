@@ -63,7 +63,7 @@ public class CurioClothesLayer<T extends LivingEntity, M extends HumanoidModel<T
 
     private void renderArmorPiece2(ItemStack itemstack, PoseStack poseStack, MultiBufferSource bufferSource, T entity, ArmorItem.Type armorType, int light, A playerModel) {
         if (itemstack.getItem() instanceof ClothesItem clothesItem) {
-            if (clothesItem.getEquivalentSlot().equals(armorType)) {
+            if (clothesItem.getType().equals(armorType)) {
                 this.getParentModel().copyPropertiesTo(playerModel);
                 this.setPartVisibility(playerModel, armorType.getSlot());
                 Model model = this.getArmorModelHook(entity, itemstack, armorType.getSlot(), playerModel);

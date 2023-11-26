@@ -1,6 +1,7 @@
 package com.lumintorious.tfcambiental.item;
 
 import com.lumintorious.tfcambiental.TFCAmbiental;
+import com.lumintorious.tfcambiental.item.material.*;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;

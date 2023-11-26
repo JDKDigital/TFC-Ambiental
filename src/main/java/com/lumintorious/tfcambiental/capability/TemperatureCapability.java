@@ -1,14 +1,9 @@
 package com.lumintorious.tfcambiental.capability;
 
-import com.lumintorious.tfcambiental.AmbientalDamage;
 import com.lumintorious.tfcambiental.TFCAmbiental;
 import com.lumintorious.tfcambiental.TFCAmbientalConfig;
-import com.lumintorious.tfcambiental.api.BlockEntityTemperatureProvider;
-import com.lumintorious.tfcambiental.api.BlockTemperatureProvider;
-import com.lumintorious.tfcambiental.api.EquipmentTemperatureProvider;
-import com.lumintorious.tfcambiental.api.ItemTemperatureProvider;
+import com.lumintorious.tfcambiental.api.*;
 import com.lumintorious.tfcambiental.item.ClothesItem;
-import com.lumintorious.tfcambiental.modifier.EnvironmentalModifier;
 import com.lumintorious.tfcambiental.modifier.TempModifierStorage;
 import net.dries007.tfc.common.capabilities.food.TFCFoodData;
 import net.dries007.tfc.util.Helpers;
@@ -32,23 +27,35 @@ import top.theillusivec4.curios.api.CuriosApi;
 public class TemperatureCapability implements ICapabilitySerializable<CompoundTag>
 {
     public static final TemperatureCapability DEFAULT = new TemperatureCapability(true);
-    public static final Capability<TemperatureCapability> CAPABILITY = Helpers.capability(new CapabilityToken<>()
-    {
-    });
+    public static final Capability<TemperatureCapability> CAPABILITY = Helpers.capability(new CapabilityToken<>() {});
     public static final ResourceLocation KEY = Helpers.identifier("temperature");
 
+    // TODO use or remove
     public boolean isDefault;
+
     private int tick = 0;
     private int damageTick = 0;
     private int durabilityTick = 0;
     private Player player;
+
+    // Current values
+    public float temperature;
+    public float wetness;
+
+    // Target values based on current modifiers
     private float target = 15;
+    private float targetWetness = 0;
+
+    // Rate of change towards target
     private float potency = 0;
-    public float bodyTemperature;
+
+    // Is inside building (cached value)
+    private boolean isInside = false;
 
     public static final float BAD_MULTIPLIER = 0.001f;
     public static final float GOOD_MULTIPLIER = 0.002f;
     public static final float CHANGE_CAP = 7.5f;
+    public static final float WET_CHANGE_CAP = 2.0f;
     public static final float HIGH_CHANGE = 0.20f;
 
     public TemperatureCapability() {
@@ -56,21 +63,32 @@ public class TemperatureCapability implements ICapabilitySerializable<CompoundTa
     }
 
     public TemperatureCapability(boolean isDefault) {
-        this.bodyTemperature = TFCAmbientalConfig.COMMON.averageTemperature.get().floatValue();
+        this.temperature = TFCAmbientalConfig.COMMON.averageTemperature.get().floatValue();
         this.isDefault = isDefault;
     }
 
-    public float getChange() {
+    public float getTemperatureChange() {
         float speed = getPotency() * 0.025f * TFCAmbientalConfig.COMMON.temperatureChangeSpeed.get().floatValue();
-        float change = Math.min(CHANGE_CAP, Math.max(-CHANGE_CAP, getTargetTemperature() - this.bodyTemperature));
-        float newTemp = this.bodyTemperature + change;
+        float change = Math.min(CHANGE_CAP, Math.max(-CHANGE_CAP, getTargetTemperature() - this.temperature));
+        float newTemp = this.temperature + change;
         float AVERAGE = TFCAmbientalConfig.COMMON.averageTemperature.get().floatValue();
-        if ((this.bodyTemperature < AVERAGE && newTemp > this.bodyTemperature) || (this.bodyTemperature > AVERAGE && newTemp < this.bodyTemperature)) {
+        if ((this.temperature < AVERAGE && newTemp > this.temperature) || (this.temperature > AVERAGE && newTemp < this.temperature)) {
             speed *= GOOD_MULTIPLIER * TFCAmbientalConfig.COMMON.goodTemperatureChangeSpeed.get().floatValue();
         } else {
             speed *= BAD_MULTIPLIER * TFCAmbientalConfig.COMMON.badTemperatureChangeSpeed.get().floatValue();
         }
-        return (change * speed);
+        return change * speed;
+    }
+
+    public float getWetnessChange() {
+        float AVERAGE = TFCAmbientalConfig.COMMON.averageTemperature.get().floatValue();
+        float speed = (getTemperature() > AVERAGE ? 0.001f : 0.0005f) * TFCAmbientalConfig.COMMON.wetnessChangeSpeed.get().floatValue();
+        // Getting wet is fast, drying is slow
+        if (getTargetWetness() > this.wetness) {
+            speed *= 16;
+        }
+        float change = Math.min(WET_CHANGE_CAP, Math.max(-WET_CHANGE_CAP, getTargetWetness() - this.wetness));
+        return change * speed;
     }
 
     public TempModifierStorage modifiers = new TempModifierStorage();
@@ -83,7 +101,7 @@ public class TemperatureCapability implements ICapabilitySerializable<CompoundTa
     public void evaluateModifiers() {
         this.clearModifiers();
         ItemTemperatureProvider.evaluateAll(this.player, this.modifiers);
-        EnvironmentalModifier.evaluateAll(this.player, this.modifiers);
+        EnvironmentalTemperatureProvider.evaluateAll(this.player, this.modifiers);
         BlockTemperatureProvider.evaluateAll(this.player, this.modifiers);
         BlockEntityTemperatureProvider.evaluateAll(this.player, this.modifiers);
         EquipmentTemperatureProvider.evaluateAll(this.player, this.modifiers);
@@ -91,11 +109,12 @@ public class TemperatureCapability implements ICapabilitySerializable<CompoundTa
 
         this.target = this.modifiers.getTargetTemperature();
         this.potency = this.modifiers.getTotalPotency();
+        this.targetWetness = this.modifiers.getTargetWetness();
 
-        if (this.target > this.bodyTemperature && this.bodyTemperature > TFCAmbientalConfig.COMMON.hotThreshold.get().floatValue()) {
+        if (this.target > this.temperature && this.temperature > TFCAmbientalConfig.COMMON.hotThreshold.get().floatValue()) {
             this.potency /= this.potency;
         }
-        if (this.target < this.bodyTemperature && this.bodyTemperature < TFCAmbientalConfig.COMMON.coolThreshold.get().floatValue()) {
+        if (this.target < this.temperature && this.temperature < TFCAmbientalConfig.COMMON.coolThreshold.get().floatValue()) {
             this.potency /= this.potency;
         }
 
@@ -104,6 +123,10 @@ public class TemperatureCapability implements ICapabilitySerializable<CompoundTa
 
     public float getTargetTemperature() {
         return this.target;
+    }
+
+    public float getTargetWetness() {
+        return this.targetWetness;
     }
 
     public float getPotency() {
@@ -119,11 +142,27 @@ public class TemperatureCapability implements ICapabilitySerializable<CompoundTa
     }
 
     public float getTemperature() {
-        return this.bodyTemperature;
+        return this.temperature;
     }
 
-    public void setTemperature(float newTemp) {
-        bodyTemperature = newTemp;
+    public void setTemperature(float temperature) {
+        this.temperature = temperature;
+    }
+
+    public float getWetness() {
+        return this.wetness;
+    }
+
+    public void setWetness(float wetness) {
+        this.wetness = Math.max(0, wetness);
+    }
+
+    public boolean isInside() {
+        return isInside;
+    }
+
+    public void setInside(boolean inside) {
+        isInside = inside;
     }
 
     @NotNull
@@ -148,21 +187,25 @@ public class TemperatureCapability implements ICapabilitySerializable<CompoundTa
         tag.putFloat("temperature", getTemperature());
         tag.putFloat("target", this.target);
         tag.putFloat("potency", this.potency);
+        tag.putFloat("targetWetness", this.targetWetness);
+        tag.putFloat("wetness", this.wetness);
         return tag;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        this.bodyTemperature = nbt.getFloat("temperature");
+        this.temperature = nbt.getFloat("temperature");
         this.target = nbt.getFloat("target");
         this.potency = nbt.getFloat("potency");
+        this.targetWetness = nbt.getFloat("targetWetness");
+        this.wetness = nbt.getFloat("wetness");
     }
 
     public void update() {
-        boolean server = !this.player.level().isClientSide();
-        if (server) {
-            this.setTemperature(this.getTemperature() + this.getChange());
-            float envTemp = EnvironmentalModifier.getEnvironmentTemperatureWithTimeOfDay(player);
+        if (!this.player.level().isClientSide()) {
+            this.setTemperature(this.getTemperature() + this.getTemperatureChange());
+            this.setWetness(this.getWetness() + this.getWetnessChange());
+            float envTemp = EnvironmentalTemperatureProvider.getEnvironmentTemperatureWithTimeOfDay(player);
             float COLD = TFCAmbientalConfig.COMMON.coolThreshold.get().floatValue();
             float HOT = TFCAmbientalConfig.COMMON.hotThreshold.get().floatValue();
 
@@ -193,9 +236,9 @@ public class TemperatureCapability implements ICapabilitySerializable<CompoundTa
                 if (this.damageTick > 40) {
                     this.damageTick = 0;
                     if (this.getTemperature() > TFCAmbientalConfig.COMMON.burnThreshold.get().floatValue()) {
-                        player.hurt(new DamageSource(player.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(AmbientalDamage.HOT)), 4f);
+                        player.hurt(new DamageSource(player.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(TFCAmbiental.HOT)), 4f);
                     } else if (this.getTemperature() < TFCAmbientalConfig.COMMON.freezeThreshold.get().floatValue()) {
-                        player.hurt(new DamageSource(player.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(AmbientalDamage.FREEZE)), 4f);
+                        player.hurt(new DamageSource(player.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(TFCAmbiental.FREEZE)), 4f);
                     }
                     if (player.getFoodData() instanceof TFCFoodData stats) {
                         if (this.getTemperature() > TFCAmbientalConfig.COMMON.burnThreshold.get().floatValue()) {

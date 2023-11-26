@@ -1,7 +1,11 @@
 package com.lumintorious.tfcambiental.event;
 
 import com.lumintorious.tfcambiental.TFCAmbiental;
+import com.lumintorious.tfcambiental.TFCAmbientalConfig;
 import com.lumintorious.tfcambiental.capability.TemperatureCapability;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -23,8 +27,19 @@ public class ForgeEventHandler
 
     @SubscribeEvent
     public static void onPlayerUpdate(TickEvent.PlayerTickEvent event) {
-        if (!event.player.level().isClientSide()) {
+        var level = event.player.level();
+        if (!level.isClientSide()) {
             event.player.getCapability(TemperatureCapability.CAPABILITY).ifPresent(TemperatureCapability::update);
+        } else {
+            // Drip when wet
+            if (level.getRandom().nextInt() <= TFCAmbientalConfig.CLIENT.drippiness.get() && !event.player.isUnderWater()) {
+                event.player.getCapability(TemperatureCapability.CAPABILITY).ifPresent(temperatureCapability -> {
+                    if (temperatureCapability.getWetness() > 0.5f && level.getRandom().nextDouble() < (0.005D * temperatureCapability.getWetness())) {
+                        var pos = event.player.position();
+                        level.addParticle(ParticleTypes.FALLING_WATER, Mth.lerp(level.random.nextDouble(), pos.x - 0.3D, pos.x + 0.3D), pos.y + 1.7D, Mth.lerp(level.random.nextDouble(), pos.z - 0.3D, pos.z + 0.3D), 0.0D, 0.0D, 0.0D);
+                    }
+                });
+            }
         }
     }
 }

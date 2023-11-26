@@ -1,0 +1,36 @@
+TFC AMBIENTAL
+- wetness
+ - new mechanic, whenever you enter water or rain you are wetted for about an in-game hour (configurable)
+ - this effects your temperature, if you are wet you will get colder faster and warmer slower (speed configurable)
+ - if you are near a heat source you will dry off faster (only by campfires and stoves and whatnot you can't dry off using just a torch) (speed configurable)
+ - this is not a potion effect, it is only shown by water particles dripping off of you
+ - if you are wearing clothes you will be wet for longer (toggleable via config, speed configurable)
+ - you get wet from entering hot springs, making them slightly less viable for not dying in winter unless you prepare them a bit more (build a sauna or something, man)
+
+- straw knapping
+ - similar to clay knapping, but instead uses 10 straw
+ - you ever play one of those games where you press one button and the surrounding 4 get toggled too? yeah that's this
+ - this is to simulate the springiness of straw
+ - this is how you will make the straw hat and new straw clothes: straw poncho, straw greaves
+ - better straw hat model (add a brim please)
+ - straw clothes kinda suck, but they're better than being naked
+ - straw is slightly resistant to being wet
+ - you can make wicker with this, an early game armor material
+
+- knitting
+ - knitting is how you craft wool knit
+ - you now create the wool clothing with this
+ - obtained by putting 2 yarn with knitting needles (2 sticks like this: XX)
+ - yarn is crafted by putting 4 string in a crafting grid
+ - this is to make it slightly easier to make clothes before the winter
+ - knitting takes time, you hold down right click and a bar at the bottom slowly progresses
+ - inspired by better than wolves' knitting
+
+- achievements
+ - Baby It's Cold Outside: Reach 0C (frostbite)
+ - My World's On Fire: Reach 30C (heatstroke)
+ - That's The Last Straw!: Create all pieces of straw clothing (hat, poncho, greaves)
+ - The Wicker Man: Create wicker armor
+ - Hot Tub: Jump into a hot spring to stop yourself from freezing
+ - (challenge) Hot Hot Hot Tub: Jump into lava to stop yourself from freezing
+ - (goal) Grandma's Sweater: Craft the entire woolen clothing set

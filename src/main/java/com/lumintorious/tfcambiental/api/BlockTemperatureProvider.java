@@ -1,12 +1,10 @@
 package com.lumintorious.tfcambiental.api;
 
-import com.lumintorious.tfcambiental.modifier.EnvironmentalModifier;
+import com.lumintorious.tfcambiental.TFCAmbiental;
 import com.lumintorious.tfcambiental.modifier.TempModifier;
 import com.lumintorious.tfcambiental.modifier.TempModifierStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -22,38 +20,39 @@ public interface BlockTemperatureProvider
         BlockPos pos1 = new BlockPos(p.getX() - 9, p.getY() - 3, p.getZ() - 9);
         BlockPos pos2 = new BlockPos(p.getX() + 9, p.getY() + 5, p.getZ() + 9);
         Iterable<BlockPos> allPositions = BlockPos.betweenClosed(pos1, pos2);
-        BlockState skipState = Blocks.AIR.defaultBlockState();
         for (BlockPos pos : allPositions) {
             BlockState state = player.level().getBlockState(pos);
-            if (state == skipState) {
+            if (state.isAir()) {
                 continue;
             }
-//            if(state.getBlock() instanceof BlockRockVariant || state.getBlock() instanceof BlockRockRaw) {
-//                continue;
-//            }
-            Block block = state.getBlock();
+
+            // Distance modifier
             double distance = Math.sqrt(player.getOnPos().distSqr(pos));
             float distanceMultiplier = (float) distance / 9f;
             distanceMultiplier = Math.min(1f, Math.max(0f, distanceMultiplier));
             distanceMultiplier = 1f - distanceMultiplier;
-            boolean isInside = EnvironmentalModifier.getSkylight(player) < 14 && EnvironmentalModifier.getBlockLight(player) > 3;
+            boolean isInside = EnvironmentalTemperatureProvider.getSkylight(player) < 14 && EnvironmentalTemperatureProvider.getBlockLight(player) > 3;
             if (isInside) {
                 distanceMultiplier *= 1.3f;
             }
             final float finalDistanceMultiplier = distanceMultiplier;
+
             for (BlockTemperatureProvider provider : AmbientalRegistry.BLOCKS) {
-                //                    if(modifier.affectedByDistance){
-                //                        modifier.setChange(modifier.getChange() * distanceMultiplier);
-                //                        modifier.setPotency(modifier.getPotency() * distanceMultiplier);
-                //                    }
-                storage.add(provider.getModifier(player, pos, state));
+                provider.getModifier(player, pos, state).ifPresent((mod) -> {
+                    mod.setChange(mod.getChange() * finalDistanceMultiplier);
+                    mod.setPotency(mod.getPotency() * finalDistanceMultiplier);
+                    mod.setWetness(mod.getWetness() * finalDistanceMultiplier);
+                    storage.add(mod);
+                });
             }
-            BlockEntity entity = player.level().getBlockEntity(pos);
-            if (entity != null) {
+
+            BlockEntity blockEntity = player.level().getBlockEntity(pos);
+            if (blockEntity != null) {
                 for (BlockEntityTemperatureProvider provider : AmbientalRegistry.BLOCK_ENTITIES) {
-                    provider.getModifier(player, entity).ifPresent((mod) -> {
+                    provider.getModifier(player, blockEntity).ifPresent((mod) -> {
                         mod.setChange(mod.getChange() * finalDistanceMultiplier);
                         mod.setPotency(mod.getPotency() * finalDistanceMultiplier);
+                        mod.setWetness(mod.getWetness() * finalDistanceMultiplier);
                         storage.add(mod);
                     });
                 }
