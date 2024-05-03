@@ -105,6 +105,7 @@ public class TemperatureCapability implements ICapabilitySerializable<CompoundTa
         BlockTemperatureProvider.evaluateAll(this.player, this.modifiers);
         BlockEntityTemperatureProvider.evaluateAll(this.player, this.modifiers);
         EquipmentTemperatureProvider.evaluateAll(this.player, this.modifiers);
+        EntityTemperatureProvider.evaluateAll(this.player, this.modifiers);
         this.modifiers.keepOnlyNEach(3);
 
         this.target = this.modifiers.getTargetTemperature();

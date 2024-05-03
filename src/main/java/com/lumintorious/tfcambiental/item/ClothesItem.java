@@ -2,7 +2,7 @@ package com.lumintorious.tfcambiental.item;
 
 import net.minecraft.world.item.*;
 
-public class ClothesItem extends ArmorItem implements Vanishable
+public class ClothesItem extends ArmorItem
 {
     public ClothesItem(ArmorMaterial material, ArmorItem.Type type, Properties pProperties) {
         super(material, type, pProperties);

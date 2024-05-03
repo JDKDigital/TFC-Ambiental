@@ -21,6 +21,8 @@ public interface BlockTemperatureProvider
         BlockPos pos2 = new BlockPos(p.getX() + 9, p.getY() + 5, p.getZ() + 9);
         Iterable<BlockPos> allPositions = BlockPos.betweenClosed(pos1, pos2);
         for (BlockPos pos : allPositions) {
+            if (!player.level().isLoaded(pos)) continue;
+
             BlockState state = player.level().getBlockState(pos);
             if (state.isAir()) {
                 continue;

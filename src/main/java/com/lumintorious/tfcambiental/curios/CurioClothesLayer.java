@@ -1,6 +1,7 @@
 package com.lumintorious.tfcambiental.curios;
 
 import com.google.common.collect.Maps;
+import com.lumintorious.tfcambiental.TFCAmbiental;
 import com.lumintorious.tfcambiental.item.ClothesItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -47,10 +48,10 @@ public class CurioClothesLayer<T extends LivingEntity, M extends HumanoidModel<T
             int pPackedLight,
             @NotNull T player
     ) {
-        this.renderArmorPiece2(itemStack, pMatrixStack, pBuffer, player, ArmorItem.Type.CHESTPLATE, pPackedLight, this.getArmorModel(ArmorItem.Type.CHESTPLATE));
-        this.renderArmorPiece2(itemStack, pMatrixStack, pBuffer, player, ArmorItem.Type.LEGGINGS, pPackedLight, this.getArmorModel(ArmorItem.Type.LEGGINGS));
-        this.renderArmorPiece2(itemStack, pMatrixStack, pBuffer, player, ArmorItem.Type.BOOTS, pPackedLight, this.getArmorModel(ArmorItem.Type.BOOTS));
-        this.renderArmorPiece2(itemStack, pMatrixStack, pBuffer, player, ArmorItem.Type.HELMET, pPackedLight, this.getArmorModel(ArmorItem.Type.HELMET));
+        this.renderArmorPiece(itemStack, pMatrixStack, pBuffer, player, ArmorItem.Type.HELMET, pPackedLight, this.getArmorModel(ArmorItem.Type.HELMET));
+        this.renderArmorPiece(itemStack, pMatrixStack, pBuffer, player, ArmorItem.Type.CHESTPLATE, pPackedLight, this.getArmorModel(ArmorItem.Type.CHESTPLATE));
+        this.renderArmorPiece(itemStack, pMatrixStack, pBuffer, player, ArmorItem.Type.LEGGINGS, pPackedLight, this.getArmorModel(ArmorItem.Type.LEGGINGS));
+        this.renderArmorPiece(itemStack, pMatrixStack, pBuffer, player, ArmorItem.Type.BOOTS, pPackedLight, this.getArmorModel(ArmorItem.Type.BOOTS));
     }
 
     private A getArmorModel(ArmorItem.Type slot) {
@@ -61,30 +62,23 @@ public class CurioClothesLayer<T extends LivingEntity, M extends HumanoidModel<T
         return pSlot.equals(ArmorItem.Type.LEGGINGS);
     }
 
-    private void renderArmorPiece2(ItemStack itemstack, PoseStack poseStack, MultiBufferSource bufferSource, T entity, ArmorItem.Type armorType, int light, A playerModel) {
+    private void renderArmorPiece(ItemStack itemstack, PoseStack poseStack, MultiBufferSource bufferSource, T entity, ArmorItem.Type armorType, int light, A playerModel) {
         if (itemstack.getItem() instanceof ClothesItem clothesItem) {
             if (clothesItem.getType().equals(armorType)) {
                 this.getParentModel().copyPropertiesTo(playerModel);
                 this.setPartVisibility(playerModel, armorType.getSlot());
-                Model model = this.getArmorModelHook(entity, itemstack, armorType.getSlot(), playerModel);
-                boolean flag1 = itemstack.hasFoil();
-                this.renderModel(poseStack, bufferSource, light, flag1, model, this.getArmorResource2(entity, itemstack, armorType, null));
+                Model model = ForgeHooksClient.getArmorModel(entity, itemstack, armorType.getSlot(), playerModel);
+                this.renderModel(poseStack, bufferSource, light, itemstack.hasFoil(), model, this.getArmorTexture(entity, itemstack, armorType, null));
             }
         }
     }
 
-    public ResourceLocation getArmorResource2(net.minecraft.world.entity.Entity entity, ItemStack stack, ArmorItem.Type slot, @Nullable String type) {
+    public ResourceLocation getArmorTexture(net.minecraft.world.entity.Entity entity, ItemStack stack, ArmorItem.Type slot, @Nullable String type) {
         ClothesItem item = (ClothesItem) stack.getItem();
-        String texture = item.getMaterial().getName();
-        String domain = "minecraft";
-        int idx = texture.indexOf(':');
-        if (idx != -1) {
-            domain = texture.substring(0, idx);
-            texture = texture.substring(idx + 1);
-        }
-        String s1 = String.format(java.util.Locale.ROOT, "%s:textures/models/armor/%s_layer_%d%s.png", domain, texture, (usesInnerModel(slot) ? 2 : 1), type == null ? "" : String.format(java.util.Locale.ROOT, "_%s", type));
+        ResourceLocation texture = new ResourceLocation(item.getMaterial().getName());
+        String s1 = String.format(java.util.Locale.ROOT, "%s:textures/models/armor/%s_layer_%d%s.png", texture.getNamespace(), texture.getPath(), (usesInnerModel(slot) ? 2 : 1), type == null ? "" : String.format(java.util.Locale.ROOT, "_%s", type));
 
-        ForgeHooksClient.getArmorTexture(entity, stack, s1, slot.getSlot(), type); // TODO jdk remove?
+//        ForgeHooksClient.getArmorTexture(entity, stack, s1, slot.getSlot(), type); // TODO jdk remove?
         ResourceLocation resourcelocation = ARMOR_LOCATION_CACHE.get(s1);
 
         if (resourcelocation == null) {
@@ -122,9 +116,5 @@ public class CurioClothesLayer<T extends LivingEntity, M extends HumanoidModel<T
                 pModel.leftLeg.visible = true;
             }
         }
-    }
-
-    protected Model getArmorModelHook(T entity, ItemStack itemStack, EquipmentSlot slot, A model) {
-        return ForgeHooksClient.getArmorModel(entity, itemStack, slot, model);
     }
 }

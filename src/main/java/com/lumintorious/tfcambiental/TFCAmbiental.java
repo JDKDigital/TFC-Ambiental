@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -55,6 +56,8 @@ public class TFCAmbiental
     public static final TagKey<Block> HOT_STUFF = TagKey.create(Registries.BLOCK, new ResourceLocation(MOD_ID, "hot_stuff"));
     public static final TagKey<Block> COLD_STUFF = TagKey.create(Registries.BLOCK, new ResourceLocation(MOD_ID, "cold_stuff"));
     public static final TagKey<Fluid> SPRING_WATER = TagKey.create(Registries.FLUID, Helpers.identifier("spring_water"));
+    public static final TagKey<EntityType<?>> HOT_ENTITIES = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(MOD_ID, "hot_entities"));
+    public static final TagKey<EntityType<?>> COLD_ENTITIES = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(MOD_ID, "cold_entities"));
 
     public static final ResourceKey<DamageType> HOT = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(TFCAmbiental.MOD_ID, "heatstroke"));
     public static final ResourceKey<DamageType> FREEZE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(TFCAmbiental.MOD_ID, "frostbite"));
@@ -116,6 +119,12 @@ public class TFCAmbiental
                         .priority(93)
                         .build()
         );
+        InterModComms.sendTo(CURIOS_ID, SlotTypeMessage.REGISTER_TYPE, () ->
+                new SlotTypeMessage.Builder("feet")
+                        .icon(FEET_SLOT)
+                        .priority(94)
+                        .build()
+        );
     }
 
     private void addTooltips(ItemTooltipEvent event) {
@@ -127,37 +136,20 @@ public class TFCAmbiental
                 TempModifier modifier = tempMaterial.getTempModifier(event.getItemStack());
                 warmth = (modifier.getChange());
                 insulation = (modifier.getPotency() / 0.1f);
-
             }
             if (clothesItem.getType().equals(ArmorItem.Type.HELMET)) {
-                event.getToolTip().add(
-                        Component.translatable(
-                                "tfcambiental.tooltip.sun_protection"
-                        ).withStyle(ChatFormatting.GRAY)
-                );
+                event.getToolTip().add(Component.translatable("tfcambiental.tooltip.sun_protection").withStyle(ChatFormatting.GRAY));
             }
         }
         warmth = ((float) Math.floor(warmth / 0.25f)) * 0.25f;
-        insulation = ((float) Math.floor(insulation / 0.25f)) * 0.25f;
-        insulation = -insulation;
+        insulation = ((float) Math.floor(insulation / 0.25f)) * -0.25f;
 
         if (warmth != 0) {
-            event.getToolTip().add(
-                    Component.translatable(
-                            "tfcambiental.tooltip.warmth",
-                            formatAttribute(warmth)
-                    ).withStyle(ChatFormatting.GRAY)
-            );
+            event.getToolTip().add(Component.translatable("tfcambiental.tooltip.warmth", formatAttribute(warmth)).withStyle(ChatFormatting.GRAY));
         }
         if (insulation != 0) {
-            event.getToolTip().add(
-                    Component.translatable(
-                            "tfcambiental.tooltip.insulation",
-                            formatAttribute(insulation)
-                    ).withStyle(ChatFormatting.GRAY)
-            );
+            event.getToolTip().add(Component.translatable("tfcambiental.tooltip.insulation", formatAttribute(insulation)).withStyle(ChatFormatting.GRAY));
         }
-
     }
 
     private static <T> void register(int id, Class<T> cls, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, BiConsumer<T, NetworkEvent.Context> handler) {

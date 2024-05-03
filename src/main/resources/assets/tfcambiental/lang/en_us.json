@@ -1,10 +1,12 @@
 {
-  "death.attack.hypothermia": "%1$s froze to death.",
-  "death.attack.hyperthermia": "%1$s died of heatstroke.",
+  "death.attack.frostbite": "%1$s froze to death.",
+  "death.attack.heatstroke": "%1$s died of heatstroke.",
 
   "effect.tfcambiental.cool.name": "Cooling Down",
   "effect.tfcambiental.warm.name": "Warming Up",
 
+  "item.tfcambiental.house_tester": "House Tester",
+  "item.tfcambiental.snowshoes": "Snow Shoes",
   "item.tfcambiental.straw_hat": "Straw Hat",
   "item.tfcambiental.leather_apron": "Leather Apron",
 
@@ -28,12 +30,20 @@
   "item.tfcambiental.insulated_leather_pants": "Insulated Leather Pants",
   "item.tfcambiental.insulated_leather_boots": "Insulated Leather Boots",
 
+  "tfcambiental.house_tester.description": "Right click to check if your current location is considered inside or outside",
+  "tfcambiental.message.is_inside": "You are inside",
+  "tfcambiental.message.is_inside_alt": "Your outsides are inside",
+  "tfcambiental.message.is_outside": "You are outside",
+  "tfcambiental.message.is_outside_alt": "Your insides are outside",
+
   "tfcambiental.tooltip.warmth": "Warmth: %s",
   "tfcambiental.tooltip.insulation": "Insulation: %s",
   "tfcambiental.tooltip.sun_protection": "Protects against direct sunlight",
+  "tfcambiental.tooltip.snowshoes": "No more sinking into powdered snow",
 
   "curios.identifier.clothes_hat": "Clothes (Head)",
   "curios.identifier.clothes_torso": "Clothes (Torso)",
   "curios.identifier.clothes_pants": "Clothes (Legs)",
-  "curios.identifier.clothes_socks": "Clothes (Feet)"
+  "curios.identifier.clothes_socks": "Clothes (Feet)",
+  "curios.identifier.feet": "Equipment (Feet)"
 }

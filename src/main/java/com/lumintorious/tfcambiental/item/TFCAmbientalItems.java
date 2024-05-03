@@ -2,7 +2,10 @@ package com.lumintorious.tfcambiental.item;
 
 import com.lumintorious.tfcambiental.TFCAmbiental;
 import com.lumintorious.tfcambiental.item.material.*;
+import net.dries007.tfc.common.TFCArmorMaterials;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -12,6 +15,16 @@ public class TFCAmbientalItems
 {
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, TFCAmbiental.MOD_ID);
+
+    public static final RegistryObject<Item> HOUSE_TESTER = ITEMS.register(
+            "house_tester",
+            () -> new HouseTester(new Item.Properties().stacksTo(1))
+    );
+
+    public static final RegistryObject<Item> SNOWSHOES = ITEMS.register(
+            "snowshoes",
+            () -> new Snowshoes(new Item.Properties().stacksTo(1).durability(27000))
+    );
 
     public static final RegistryObject<Item> LEATHER_APRON = ITEMS.register(
             "leather_apron",

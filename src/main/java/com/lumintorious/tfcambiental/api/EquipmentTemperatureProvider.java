@@ -5,6 +5,7 @@ import com.lumintorious.tfcambiental.TFCAmbientalConfig;
 import com.lumintorious.tfcambiental.item.material.TemperatureAlteringMaterial;
 import com.lumintorious.tfcambiental.modifier.TempModifier;
 import com.lumintorious.tfcambiental.modifier.TempModifierStorage;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
@@ -56,5 +57,27 @@ public interface EquipmentTemperatureProvider
                 }
             }
         });
+        for (var fn : AmbientalRegistry.EQUIPMENT) {
+            storage.add(fn.getModifier(player, player.getItemBySlot(EquipmentSlot.HEAD)));
+            storage.add(fn.getModifier(player, player.getItemBySlot(EquipmentSlot.CHEST)));
+            storage.add(fn.getModifier(player, player.getItemBySlot(EquipmentSlot.LEGS)));
+            storage.add(fn.getModifier(player, player.getItemBySlot(EquipmentSlot.FEET)));
+        }
+    }
+
+    static ItemStack getEquipmentByType(Player player, ArmorItem.Type type) {
+        var feetArmor = player.getItemBySlot(EquipmentSlot.FEET);
+        if (!feetArmor.isEmpty() && feetArmor.getItem() instanceof ArmorItem armorItem && armorItem.getType().equals(type)) {
+            return feetArmor;
+        }
+        return CuriosApi.getCuriosHelper().getEquippedCurios(player).map(c -> {
+            for (int i = 0; i < c.getSlots(); i++) {
+                ItemStack stack = c.getStackInSlot(i);
+                if (stack.getItem() instanceof ArmorItem armorItem && armorItem.getType().equals(type)) {
+                    return stack;
+                }
+            }
+            return ItemStack.EMPTY;
+        }).orElse(ItemStack.EMPTY);
     }
 }

@@ -1,8 +1,11 @@
 package com.lumintorious.tfcambiental.event;
 
 import com.lumintorious.tfcambiental.curios.ClothesCurioRenderer;
+import com.lumintorious.tfcambiental.curios.SnowshoesCurioRenderer;
 import com.lumintorious.tfcambiental.item.TFCAmbientalItems;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
@@ -13,6 +16,8 @@ public class ClientEventHandler
     }
 
     private static void setup(FMLClientSetupEvent event) {
+        CuriosRendererRegistry.register(TFCAmbientalItems.SNOWSHOES.get(), SnowshoesCurioRenderer::new);
+
         CuriosRendererRegistry.register(TFCAmbientalItems.STRAW_HAT.get(), ClothesCurioRenderer::new);
         CuriosRendererRegistry.register(TFCAmbientalItems.LEATHER_APRON.get(), ClothesCurioRenderer::new);
 
