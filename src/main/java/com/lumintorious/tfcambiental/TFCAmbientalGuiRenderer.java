@@ -15,6 +15,8 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.common.ForgeMod;
 import org.lwjgl.opengl.GL11;
 
+import static com.lumintorious.tfcambiental.TFCAmbientalConfig.CLIENT;
+
 @OnlyIn(Dist.CLIENT)
 public class TFCAmbientalGuiRenderer
 {
@@ -89,7 +91,7 @@ public class TFCAmbientalGuiRenderer
                 }
 
                 Font f = gui.getFont();
-                String tempStr = String.format("%.1f\u00BA -> %.1f\u00BA", tempSystem.getTemperature(), tempSystem.getTargetTemperature());
+                String tempStr = String.format("%.1f\u00BA -> %.1f\u00BA", scaleTemperature(tempSystem.getTemperature()), scaleTemperature(tempSystem.getTargetTemperature()));
                 stack.drawString(f, tempStr, mid + 50 - f.width(tempStr) / 2F, armorRowHeight + 1 - shiftHeight, TFCAmbientalGuiRenderer.getIntFromColor(redCol, greenCol, blueCol), false);
 
                 String wetStr = String.format("%.1f -> %.1f", tempSystem.getWetness(), Math.max(0, tempSystem.getTargetWetness()));
@@ -175,5 +177,13 @@ public class TFCAmbientalGuiRenderer
         B = B & 0x000000FF;
 
         return 0xFF000000 | R | G | B;
+    }
+
+    private static int scaleTemperature(int celsius) {
+        if (CLIENT.useFahrenheit.get()) {
+            return celsius * (9d/5) + 32;
+        } else {
+            return celsius;
+        }
     }
 }

@@ -130,6 +130,8 @@ public class TFCAmbientalConfig
 
     public static class ClientImpl
     {
+        public final ForgeConfigSpec.BooleanValue useFahrenheit;
+        
         public final ForgeConfigSpec.DoubleValue noiseDarkness;
         public final ForgeConfigSpec.IntValue noiseLevels;
         public final ForgeConfigSpec.IntValue noiseArea;
@@ -142,6 +144,10 @@ public class TFCAmbientalConfig
 
         ClientImpl(ForgeConfigSpec.Builder builder) {
             builder.comment("For all ARGB values, set to 00000000 to disable the feature in that season");
+
+            isFahrenheit = builder
+                    .comment("Change temperature display to Fahrenheit.")
+                    .define("useFahrenheit", false);
 
             noiseDarkness = builder
                     .comment("How dark should the noise be at most? Set to 0 to disable noise entirely")
