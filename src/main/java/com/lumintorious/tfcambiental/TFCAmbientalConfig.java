@@ -133,6 +133,7 @@ public class TFCAmbientalConfig
         public final ForgeConfigSpec.BooleanValue useFahrenheit;
         
         public final ForgeConfigSpec.DoubleValue noiseDarkness;
+        public final ForgeConfigSpec.DoubleValue guiOffset;
         public final ForgeConfigSpec.IntValue noiseLevels;
         public final ForgeConfigSpec.IntValue noiseArea;
         public final ForgeConfigSpec.IntValue drippiness;
@@ -145,13 +146,17 @@ public class TFCAmbientalConfig
         ClientImpl(ForgeConfigSpec.Builder builder) {
             builder.comment("For all ARGB values, set to 00000000 to disable the feature in that season");
 
-            isFahrenheit = builder
+            useFahrenheit = builder
                     .comment("Change temperature display to Fahrenheit.")
                     .define("useFahrenheit", false);
 
             noiseDarkness = builder
                     .comment("How dark should the noise be at most? Set to 0 to disable noise entirely")
                     .defineInRange("noiseDarkness", 0.18d, 0, 0.5d);
+
+            guiOffset = builder
+                    .comment("Offset the GUI elements. Useful if you're using a resourcep ack that changes the health or hunger bars")
+                    .defineInRange("guiOffset", 0f, 0, Float.MAX_VALUE);
 
             noiseLevels = builder
                     .comment("How many darkness levels should there be?")

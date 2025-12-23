@@ -4,9 +4,7 @@ import com.lumintorious.tfcambiental.TFCAmbientalConfig;
 import com.lumintorious.tfcambiental.item.TFCAmbientalItems;
 import com.lumintorious.tfcambiental.modifier.TempModifier;
 import com.lumintorious.tfcambiental.modifier.TempModifierStorage;
-import net.dries007.tfc.common.blockentities.BloomeryBlockEntity;
-import net.dries007.tfc.common.blockentities.CharcoalForgeBlockEntity;
-import net.dries007.tfc.common.blockentities.FirepitBlockEntity;
+import net.dries007.tfc.common.blockentities.*;
 import net.dries007.tfc.common.capabilities.heat.HeatCapability;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -56,6 +54,30 @@ public interface BlockEntityTemperatureProvider
                 change = change * 0.3f;
             }
             return TempModifier.defined("fire_pit", Math.min(6f, change), 0);
+        }
+        return TempModifier.none();
+    }
+
+    static Optional<TempModifier> handlePot(Player player, BlockEntity entity) {
+        if (entity instanceof PotBlockEntity pit) {
+            float temp = pit.getTemperature();
+            float change = temp / 100f;
+            if (hasProtection(player)) {
+                change = change * 0.3f;
+            }
+            return TempModifier.defined("pot", Math.min(6f, change), 0);
+        }
+        return TempModifier.none();
+    }
+
+    static Optional<TempModifier> handleGrill(Player player, BlockEntity entity) {
+        if (entity instanceof GrillBlockEntity pit) {
+            float temp = pit.getTemperature();
+            float change = temp / 100f;
+            if (hasProtection(player)) {
+                change = change * 0.3f;
+            }
+            return TempModifier.defined("grill", Math.min(6f, change), 0);
         }
         return TempModifier.none();
     }

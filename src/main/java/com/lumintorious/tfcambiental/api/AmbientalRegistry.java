@@ -28,6 +28,8 @@ public class AmbientalRegistry<Type> implements Iterable<Type>
 
         BLOCK_ENTITIES.register(BlockEntityTemperatureProvider::handleCharcoalForge);
         BLOCK_ENTITIES.register(BlockEntityTemperatureProvider::handleFirePit);
+        BLOCK_ENTITIES.register(BlockEntityTemperatureProvider::handlePot);
+        BLOCK_ENTITIES.register(BlockEntityTemperatureProvider::handleGrill);
         BLOCK_ENTITIES.register(BlockEntityTemperatureProvider::handleBloomery);
         BLOCK_ENTITIES.register(BlockEntityTemperatureProvider::handleLitBlock);
         BLOCK_ENTITIES.register(BlockEntityTemperatureProvider::handleIHeatBlock);

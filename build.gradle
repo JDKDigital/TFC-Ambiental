@@ -135,12 +135,12 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    implementation fg.deobf("curse.maven:terrafirmacraft-302973:5571484")
+    implementation fg.deobf("curse.maven:terrafirmacraft-302973:6990923")
 
     implementation fg.deobf("curse.maven:patchouli-306770:4966125")
-    implementation fg.deobf("curse.maven:jei-238222:5648527")
+    implementation fg.deobf("curse.maven:jei-238222:7229074")
     implementation fg.deobf("curse.maven:curios-309927:5367944")
-    implementation fg.deobf("curse.maven:firmalife-453394:5651628")
+    implementation fg.deobf("curse.maven:firmalife-453394:7184123")
 }
 
 def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']

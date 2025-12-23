@@ -188,8 +188,12 @@ public interface EnvironmentalTemperatureProvider
 
     static Optional<TempModifier> handleThirst(Player player) {
         if (player.getFoodData() instanceof TFCFoodData stats) {
-            if (stats.getThirst() > 80f && getEnvironmentTemperatureWithTimeOfDay(player) > TFCAmbientalConfig.COMMON.averageTemperature.get().floatValue() + 3) {
-                return TempModifier.defined("well_hydrated", -2.5f, 0f);
+            if (getEnvironmentTemperatureWithTimeOfDay(player) > TFCAmbientalConfig.COMMON.averageTemperature.get().floatValue() + 3) {
+                if (stats.getThirst() > 80f) {
+                    return TempModifier.defined("well_hydrated", -2.5f, 0f);
+                } else if (stats.getThirst() < 5f) {
+                    return TempModifier.defined("parched", 2.5f, 0f);
+                }
             }
         }
         return TempModifier.none();

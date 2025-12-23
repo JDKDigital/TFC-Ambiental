@@ -1,3 +1,10 @@
+1.20.1-3.4.0
+
+- Pot and grill now heats you up just like a regular fire pit
+- Added config for GUI elements offset
+- Being parched will now heat you up faster
+
+
 1.20.1-3.3.1
 
 - Added trapdoors as dangerous for house testing bee, so they will count as indoor

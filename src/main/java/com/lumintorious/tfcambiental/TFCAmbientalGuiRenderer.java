@@ -84,10 +84,10 @@ public class TFCAmbientalGuiRenderer
             }
 
             if (player.isCrouching()) {
-                var shiftHeight = 0.0f;
+                float shiftHeight = CLIENT.guiOffset.get().floatValue();
                 int air = player.getAirSupply();
                 if (player.isEyeInFluidType(ForgeMod.WATER_TYPE.get()) || air < 300 || player.getArmorValue() > 0) {
-                    shiftHeight = 10.0f;
+                    shiftHeight += 10.0f;
                 }
 
                 Font f = gui.getFont();
@@ -179,9 +179,9 @@ public class TFCAmbientalGuiRenderer
         return 0xFF000000 | R | G | B;
     }
 
-    private static int scaleTemperature(int celsius) {
+    private static float scaleTemperature(float celsius) {
         if (CLIENT.useFahrenheit.get()) {
-            return celsius * (9d/5) + 32;
+            return celsius * (9f/5f) + 32f;
         } else {
             return celsius;
         }
